@@ -397,7 +397,7 @@
     <form id="sellForm" onsubmit="return submitSell(event)">
       <div class="field"><label>পণ্যের নাম</label><input type="text" id="sell_pname" required placeholder="যেমনঃ নতুন শাড়ি"></div>
       <div class="field"><label>বিভাগ (Category)</label>
-        <select id="sell_category">
+        <select id="sell_category" onchange="updateSellCategoryFields()">
           <option value="tshirt">টি-শার্ট</option>
           <option value="mens">পুরুষদের ফ্যাশন</option>
           <option value="womens">মহিলাদের ফ্যাশন</option>
@@ -413,6 +413,18 @@
           <option value="book">বই</option>
           <option value="toys">খেলনা</option>
         </select>
+      </div>
+      <div class="field" id="sellGenderField" style="display:none;">
+        <label>কাদের জন্য?</label>
+        <select id="sell_gender">
+          <option value="boy">ছেলে</option>
+          <option value="girl">মেয়ে</option>
+          <option value="kids">শিশু</option>
+        </select>
+      </div>
+      <div class="field" id="sellBrandField" style="display:none;">
+        <label>ব্র্যান্ড/কোম্পানি</label>
+        <select id="sell_brand"></select>
       </div>
       <div class="field">
         <label>পণ্যের কালার (একটি বা একাধিক সিলেক্ট করো)</label>
@@ -474,18 +486,18 @@ const ICONS = {
 /* category master list — key MUST exist in ICONS and matches section id "sec-<key>"
    aliases[] = English/alt keywords so search works even when typed in English */
 const categories = [
-  {name:"টি-শার্ট", key:"tshirt", icon:"tshirt_boy", bg:"#ffe3da", aliases:["tshirt","t-shirt","tee","shirt"]},
-  {name:"পুরুষদের ফ্যাশন", key:"mens", icon:"mens", bg:"#e2ebff", aliases:["men","mens","man","blazer","panjabi"]},
-  {name:"মহিলাদের ফ্যাশন", key:"womens", icon:"womens", bg:"#fbe2f3", aliases:["women","womens","woman","dress","gown","kurti","lady","ladies"]},
-  {name:"শাড়ি", key:"saree", icon:"saree", bg:"#efe3ff", aliases:["saree","sari"]},
-  {name:"থ্রি পিস", key:"threepiece", icon:"threepiece", bg:"#dcf7f2", aliases:["three piece","threepiece","salwar","kameez","suit"]},
-  {name:"প্যান্ট", key:"pant", icon:"pant", bg:"#e4e8f5", aliases:["pant","pants","trouser","jeans","denim","palazzo"]},
-  {name:"মোবাইল", key:"mobile", icon:"mobile", bg:"#dff0ff", aliases:["mobile","phone","smartphone","cellphone"], brands:["সব","Vivo","Realme","Samsung","iPhone","Xiaomi","Oppo"]},
-  {name:"ল্যাপটপ", key:"laptop", icon:"laptop", bg:"#e6f0ff", aliases:["laptop","notebook"], brands:["সব","HP","Lenovo","Dell","Apple","Asus"]},
-  {name:"ইলেকট্রনিক্স", key:"electronics", icon:"electronics", bg:"#fff4d6", aliases:["electronics","gadget","headphone","earbuds","speaker","powerbank","tv","router"]},
-  {name:"কম্পিউটার", key:"computer", icon:"computer", bg:"#e3f7ec", aliases:["computer","pc","desktop","monitor"]},
-  {name:"ঘড়ি ও আনুষাঙ্গিক", key:"watch", icon:"watch", bg:"#fff0d9", aliases:["watch","clock","wristwatch"]},
-  {name:"জুতা", key:"shoes", icon:"shoes", bg:"#ffe6da", aliases:["shoes","shoe","sneaker","sandal","loafer"]},
+  {name:"টি-শার্ট", key:"tshirt", icon:"tshirt_boy", bg:"#ffe3da", aliases:["tshirt","t-shirt","tee","shirt"], brands:["সব","Gucci","Nike","Adidas","Local Brand","অন্যান্য"]},
+  {name:"পুরুষদের ফ্যাশন", key:"mens", icon:"mens", bg:"#e2ebff", aliases:["men","mens","man","blazer","panjabi"], brands:["সব","Zara","Yellow","Ecstasy","Local Brand","অন্যান্য"]},
+  {name:"মহিলাদের ফ্যাশন", key:"womens", icon:"womens", bg:"#fbe2f3", aliases:["women","womens","woman","dress","gown","kurti","lady","ladies"], brands:["সব","Aarong","Kay Kraft","Rang","Zara","অন্যান্য"]},
+  {name:"শাড়ি", key:"saree", icon:"saree", bg:"#efe3ff", aliases:["saree","sari"], brands:["সব","Aarong","Prabartana","Deshi Dosh","অন্যান্য"]},
+  {name:"থ্রি পিস", key:"threepiece", icon:"threepiece", bg:"#dcf7f2", aliases:["three piece","threepiece","salwar","kameez","suit"], brands:["সব","Aarong","Kay Kraft","Rang","অন্যান্য"]},
+  {name:"প্যান্ট", key:"pant", icon:"pant", bg:"#e4e8f5", aliases:["pant","pants","trouser","jeans","denim","palazzo"], brands:["সব","Levis","Zara","Yellow","অন্যান্য"]},
+  {name:"মোবাইল", key:"mobile", icon:"mobile", bg:"#dff0ff", aliases:["mobile","phone","smartphone","cellphone"], brands:["সব","Vivo","Realme","Samsung","iPhone","Xiaomi","Oppo","অন্যান্য"]},
+  {name:"ল্যাপটপ", key:"laptop", icon:"laptop", bg:"#e6f0ff", aliases:["laptop","notebook"], brands:["সব","HP","Lenovo","Dell","Apple","Asus","অন্যান্য"]},
+  {name:"ইলেকট্রনিক্স", key:"electronics", icon:"electronics", bg:"#fff4d6", aliases:["electronics","gadget","headphone","earbuds","speaker","powerbank","tv","router"], brands:["সব","Sony","JBL","Xiaomi","Walton","অন্যান্য"]},
+  {name:"কম্পিউটার", key:"computer", icon:"computer", bg:"#e3f7ec", aliases:["computer","pc","desktop","monitor"], brands:["সব","Dell","HP","Asus","Custom Build","অন্যান্য"]},
+  {name:"ঘড়ি ও আনুষাঙ্গিক", key:"watch", icon:"watch", bg:"#fff0d9", aliases:["watch","clock","wristwatch"], brands:["সব","Casio","Fossil","Smart Watch","Local","অন্যান্য"]},
+  {name:"জুতা", key:"shoes", icon:"shoes", bg:"#ffe6da", aliases:["shoes","shoe","sneaker","sandal","loafer"], brands:["সব","Nike","Adidas","Bata","Apex","অন্যান্য"]},
   {name:"বই", key:"book", icon:"book", bg:"#f0e9da", aliases:["book","books","novel","story"]},
   {name:"খেলনা", key:"toys", icon:"toys", bg:"#f3e6d2", aliases:["toy","toys","kids toy"]},
 ];
@@ -729,21 +741,40 @@ categories.forEach(c=>{
   grid.dataset.activeFilter = 'all';
 
   if(c.key === 'tshirt'){
-    const filterRow = document.createElement('div');
-    filterRow.className='filter-row';
+    const genderRow = document.createElement('div');
+    genderRow.className='filter-row';
     Object.keys(genderLabels).forEach(g=>{
       const chip = document.createElement('button');
       chip.className = 'chip' + (g==='all' ? ' active':'');
       chip.textContent = genderLabels[g];
       chip.onclick = ()=>{
-        filterRow.querySelectorAll('.chip').forEach(ch=>ch.classList.remove('active'));
+        genderRow.querySelectorAll('.chip').forEach(ch=>ch.classList.remove('active'));
         chip.classList.add('active');
         grid.dataset.activeFilter = g;
         renderCategoryGrid('tshirt', 'gender');
       };
-      filterRow.appendChild(chip);
+      genderRow.appendChild(chip);
     });
-    sec.appendChild(filterRow);
+    sec.appendChild(genderRow);
+
+    if(c.brands){
+      const brandRow = document.createElement('div');
+      brandRow.className='filter-row';
+      grid.dataset.activeBrand = 'all';
+      c.brands.forEach(b=>{
+        const chip = document.createElement('button');
+        chip.className = 'chip' + (b==='সব' ? ' active':'');
+        chip.textContent = b;
+        chip.onclick = ()=>{
+          brandRow.querySelectorAll('.chip').forEach(ch=>ch.classList.remove('active'));
+          chip.classList.add('active');
+          grid.dataset.activeBrand = b==='সব' ? 'all' : b;
+          renderCategoryGrid('tshirt', 'gender');
+        };
+        brandRow.appendChild(chip);
+      });
+      sec.appendChild(brandRow);
+    }
   } else if(c.brands){
     const filterRow = document.createElement('div');
     filterRow.className='filter-row';
@@ -773,12 +804,22 @@ function renderCategoryGrid(key, filterField){
   const cat = categories.find(c=>c.key===key);
   const grid = document.getElementById('grid-'+key);
   if(!grid || !cat) return;
-  const activeVal = grid.dataset.activeFilter || 'all';
   let list = PRODUCTS_BY_CAT[key] || [];
+
+  const activeVal = grid.dataset.activeFilter || 'all';
   if(filterField && activeVal !== 'all'){
     const activeNorm = activeVal.trim().toLowerCase();
     list = list.filter(p => (p[filterField] || '').toString().trim().toLowerCase() === activeNorm);
   }
+  // T-shirt এ gender ফিল্টারের পাশাপাশি ব্র্যান্ড ফিল্টারও একসাথে প্রয়োগ হয়
+  if(key === 'tshirt'){
+    const activeBrand = grid.dataset.activeBrand || 'all';
+    if(activeBrand !== 'all'){
+      const brandNorm = activeBrand.trim().toLowerCase();
+      list = list.filter(p => (p.brand || '').toString().trim().toLowerCase() === brandNorm);
+    }
+  }
+
   grid.innerHTML = '';
   if(list.length === 0){
     grid.innerHTML = `<p style="grid-column:1/-1;color:var(--gray);text-align:center;padding:24px 10px;">এখনো এই বিভাগে কোনো পণ্য যোগ করা হয়নি।</p>`;
@@ -953,6 +994,28 @@ function previewSellImage(e){
   reader.readAsDataURL(file);
 }
 
+/* ================= SELL FORM: category-driven gender/brand fields ================= */
+function updateSellCategoryFields(){
+  const category = document.getElementById('sell_category').value;
+  const cat = categories.find(c=>c.key===category);
+
+  const genderField = document.getElementById('sellGenderField');
+  genderField.style.display = (category === 'tshirt') ? '' : 'none';
+
+  const brandField = document.getElementById('sellBrandField');
+  const brandSelect = document.getElementById('sell_brand');
+  if(cat && cat.brands && cat.brands.length){
+    brandField.style.display = '';
+    // "সব" শুধু ফিল্টার চিপের জন্য, প্রোডাক্টের নিজের ব্র্যান্ড হিসেবে বাদ
+    const options = cat.brands.filter(b=>b!=='সব');
+    brandSelect.innerHTML = options.map(b=>`<option value="${b}">${b}</option>`).join('');
+  } else {
+    brandField.style.display = 'none';
+    brandSelect.innerHTML = '';
+  }
+}
+updateSellCategoryFields(); // প্রথমবার পেজ লোড হওয়ার সময় ডিফল্ট ক্যাটাগরির (T-shirt) ফিল্ড ঠিক করে দেয়
+
 function openSellFlow(){
   ensureUserInfo(()=>{ openOverlay('sellOverlay'); });
 }
@@ -974,6 +1037,14 @@ async function submitSell(e){
   const fileInput = document.getElementById('sell_image_file');
   const file = fileInput.files[0];
 
+  const gender = (category === 'tshirt') ? document.getElementById('sell_gender').value : null;
+  const genderLabelText = gender ? genderLabels[gender] : '';
+  const brandField = document.getElementById('sellBrandField');
+  const brand = (brandField.style.display !== 'none') ? document.getElementById('sell_brand').value : null;
+
+  const genderIconMap = {boy:'tshirt_boy', girl:'tshirt_girl', kids:'tshirt_kids'};
+  const icon = (category === 'tshirt') ? (genderIconMap[gender] || 'tshirt_boy') : category;
+
   let imageUrl = null;
   try{
     if(file){
@@ -987,7 +1058,9 @@ async function submitSell(e){
     const { error: insErr } = await sb.from('products').insert({
       name: pname,
       category: category,
-      icon: (category === 'tshirt' ? 'tshirt_boy' : category),
+      icon: icon,
+      brand: brand,
+      gender: gender,
       old_price: oldPrice ? Number(oldPrice) : null,
       price: Number(price),
       colors: selectedColors.length ? selectedColors : null,
@@ -1007,6 +1080,7 @@ async function submitSell(e){
 
   const msg = `আসসালামু আলাইকুম, আমি একটি পণ্য বিক্রি করতে চাই (Admin panel এ Pending হিসেবে জমা হয়েছে):\n\n`+
     `পণ্যের নাম: ${pname}\nবিভাগ: ${categoryLabel}\n`+
+    `${brand ? `ব্র্যান্ড: ${brand}\n` : ''}${genderLabelText ? `কাদের জন্য: ${genderLabelText}\n` : ''}`+
     `${oldPrice ? `আসল দাম: ৳${oldPrice}\n` : ''}বিক্রয় মূল্য: ৳${price}\n`+
     `কালার অপশন: ${coloursText}\n`+
     `বিবরণ: ${desc}\n\n`+

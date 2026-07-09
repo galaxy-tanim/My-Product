@@ -116,10 +116,6 @@
         <label>ক্যাটাগরি বেছে নাও</label>
         <select id="manageCategoryFilter" onchange="loadManageList()"></select>
       </div>
-      <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:18px;">
-        <button class="btn gray" onclick="clearCategoryProducts()">🗑️ এই ক্যাটাগরির সব পণ্য মুছো</button>
-        <button class="btn" style="background:var(--red);" onclick="clearAllProducts()">🗑️ সব পণ্য মুছে ফেলো (সম্পূর্ণ সাইট)</button>
-      </div>
       <div id="manageList"></div>
     </div>
   </div>
@@ -380,33 +376,6 @@ async function loadManageList(){
     };
     list.appendChild(el);
   });
-}
-
-/* ================= BULK DELETE ================= */
-async function clearCategoryProducts(){
-  const cat = document.getElementById('manageCategoryFilter').value;
-  if(cat === 'all'){
-    alert('উপরে একটা নির্দিষ্ট ক্যাটাগরি বেছে নাও আগে (এখন "সব ক্যাটাগরি" সিলেক্ট করা আছে) — সব ক্যাটাগরির জন্য "সব পণ্য মুছে ফেলো" বাটন ব্যবহার করো।');
-    return;
-  }
-  const label = categoryNames[cat] || cat;
-  if(!confirm(`"${label}" ক্যাটাগরির সবগুলো পণ্য স্থায়ীভাবে মুছে ফেলতে চাও? এটা আর ফিরিয়ে আনা যাবে না।`)) return;
-  if(!confirm('নিশ্চিত? এই ক্যাটাগরির সব পণ্য এখনই মুছে যাবে।')) return;
-  const { error } = await sb.from('products').delete().eq('category', cat);
-  if(error){ alert('ব্যর্থ: '+error.message); return; }
-  alert(`✅ "${label}" ক্যাটাগরির সব পণ্য মুছে ফেলা হয়েছে।`);
-  loadManageList();
-  refreshStats();
-}
-
-async function clearAllProducts(){
-  if(!confirm('⚠️ সাইটের সবগুলো পণ্য (সব ক্যাটাগরি মিলিয়ে) স্থায়ীভাবে মুছে ফেলতে চাও? এটা আর ফিরিয়ে আনা যাবে না।')) return;
-  if(!confirm('একদম নিশ্চিত? এখনই পুরো ক্যাটালগ খালি হয়ে যাবে — চাইলে পরে আবার "ডেমো প্রোডাক্ট লোড করো" দিয়ে আগের ডেমো ক্যাটালগ ফিরিয়ে আনতে পারবে।')) return;
-  const { error } = await sb.from('products').delete().neq('id', -1); // সব সারি মুছে ফেলার শর্ত (id কখনো -1 হয় না)
-  if(error){ alert('ব্যর্থ: '+error.message); return; }
-  alert('✅ সাইটের সব পণ্য মুছে ফেলা হয়েছে।');
-  loadManageList();
-  refreshStats();
 }
 
 /* ================= SEED DEMO DATA (একবারই চালানোর জন্য) ================= */
