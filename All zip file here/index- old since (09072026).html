@@ -171,16 +171,6 @@
   .card .img-wrap svg{ width:52%; height:52%; transition:.35s; }
   .card:hover .img-wrap svg{ transform:scale(1.12) rotate(-2deg); }
   .card .img-wrap img{ width:100%; height:100%; object-fit:cover; transition:.35s; }
-
-  /* ===== IMAGE ZOOM LIGHTBOX ===== */
-  .zoom-overlay{
-    position:fixed; inset:0; background:rgba(11,58,82,0.9); display:none; align-items:center; justify-content:center;
-    z-index:1000; padding:24px; cursor:zoom-out;
-  }
-  .zoom-overlay.show{ display:flex; }
-  .zoom-overlay img{ max-width:100%; max-height:85vh; border-radius:14px; box-shadow:0 20px 60px rgba(0,0,0,0.5); }
-  .zoom-overlay .zoom-caption{ position:absolute; bottom:26px; left:0; right:0; text-align:center; color:#fff; font-weight:600; font-size:15px; }
-  .zoom-overlay .zoom-close{ position:absolute; top:18px; right:22px; color:#fff; font-size:30px; background:none; border:none; cursor:pointer; }
   .card:hover .img-wrap img{ transform:scale(1.08); }
   .discount-tag{
     position:absolute; top:10px; right:10px; background:var(--red); color:#fff; font-size:12px; font-weight:700;
@@ -319,12 +309,7 @@
 
 </main>
 
-<a class="fab" href="https://wa.me/8801851717924" target="_blank">
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91C2.13 13.66 2.59 15.36 3.45 16.86L2.05 22L7.3 20.62C8.75 21.41 10.38 21.83 12.04 21.83C17.5 21.83 21.95 17.38 21.95 11.92C21.95 9.27 20.92 6.78 19.05 4.91C17.18 3.03 14.69 2 12.04 2ZM12.04 20.15C10.56 20.15 9.11 19.75 7.85 19L7.55 18.82L4.43 19.65L5.27 16.61L5.08 16.29C4.25 15 3.81 13.47 3.81 11.91C3.81 7.37 7.5 3.68 12.05 3.68C14.25 3.68 16.32 4.54 17.87 6.09C19.42 7.64 20.27 9.71 20.27 11.92C20.26 16.46 16.57 20.15 12.04 20.15ZM16.56 13.99C16.32 13.87 15.13 13.28 14.9 13.2C14.68 13.11 14.52 13.07 14.35 13.31C14.19 13.55 13.72 14.11 13.58 14.27C13.44 14.44 13.3 14.46 13.06 14.34C12.82 14.22 12.04 13.96 11.11 13.14C10.39 12.5 9.9 11.71 9.76 11.47C9.62 11.23 9.74 11.1 9.86 10.98C9.97 10.87 10.11 10.68 10.24 10.54C10.36 10.4 10.4 10.29 10.49 10.13C10.57 9.97 10.53 9.83 10.47 9.71C10.41 9.59 9.92 8.39 9.72 7.9C9.52 7.42 9.32 7.49 9.17 7.48C9.03 7.47 8.87 7.47 8.7 7.47C8.54 7.47 8.28 7.53 8.05 7.77C7.83 8.01 7.19 8.6 7.19 9.8C7.19 11 8.07 12.16 8.19 12.32C8.31 12.48 9.91 14.97 12.37 16.02C12.96 16.27 13.42 16.42 13.78 16.53C14.37 16.72 14.91 16.69 15.34 16.63C15.82 16.56 16.83 16.02 17.03 15.44C17.24 14.86 17.24 14.36 17.18 14.26C17.12 14.15 16.96 14.09 16.72 13.97" fill="#ffffff"/>
-  </svg>
-  Developer
-</a>
+<a class="fab" href="https://wa.me/8801851717924" target="_blank">💬 Developer</a>
 
 <footer>
   <div class="foot-grid">
@@ -432,13 +417,6 @@
       <p class="whatsapp-note">সাবমিট করলে WhatsApp (01851717924) খুলে যাবে পণ্যের তথ্যসহ।</p>
     </form>
   </div>
-</div>
-
-<!-- ===== IMAGE ZOOM LIGHTBOX ===== -->
-<div class="zoom-overlay" id="zoomOverlay" onclick="closeImageZoom()">
-  <button class="zoom-close" onclick="closeImageZoom()">✕</button>
-  <img id="zoomImage" src="" alt="">
-  <div class="zoom-caption" id="zoomCaption"></div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -681,7 +659,7 @@ function productCard(p, catBg, categoryKey){
   const cat = categories.find(c=>c.key===categoryKey);
   const searchStr = [p.name, p.brand||'', cat ? cat.name : '', ...(cat ? cat.aliases : [])].join(' ').toLowerCase();
   const media = p.image_url
-    ? `<img src="${p.image_url}" alt="${p.name}" class="real-photo" style="width:100%;height:100%;object-fit:contain;cursor:zoom-in;" loading="lazy">`
+    ? `<img src="${p.image_url}" alt="${p.name}" style="width:100%;height:100%;object-fit:cover;" loading="lazy">`
     : (ICONS[p.icon] || ICONS['toys']);
   const outOfStock = !p.stock || p.stock <= 0;
   const card = document.createElement('div');
@@ -704,8 +682,6 @@ function productCard(p, catBg, categoryKey){
   if(!outOfStock){
     card.querySelector('.order-btn').onclick = ()=>startOrder(p, categoryKey);
   }
-  const photoEl = card.querySelector('.real-photo');
-  if(photoEl){ photoEl.onclick = ()=>openImageZoom(p.image_url, p.name); }
   return card;
 }
 
@@ -775,10 +751,7 @@ function renderCategoryGrid(key, filterField){
   if(!grid || !cat) return;
   const activeVal = grid.dataset.activeFilter || 'all';
   let list = PRODUCTS_BY_CAT[key] || [];
-  if(filterField && activeVal !== 'all'){
-    const activeNorm = activeVal.trim().toLowerCase();
-    list = list.filter(p => (p[filterField] || '').toString().trim().toLowerCase() === activeNorm);
-  }
+  if(filterField && activeVal !== 'all') list = list.filter(p=>p[filterField]===activeVal);
   grid.innerHTML = '';
   if(list.length === 0){
     grid.innerHTML = `<p style="grid-column:1/-1;color:var(--gray);text-align:center;padding:24px 10px;">এখনো এই বিভাগে কোনো পণ্য যোগ করা হয়নি।</p>`;
@@ -828,15 +801,6 @@ let currentOrderCategoryKey = null;
 
 function openOverlay(id){ document.getElementById(id).classList.add('show'); }
 function closeOverlay(id){ document.getElementById(id).classList.remove('show'); }
-
-function openImageZoom(url, name){
-  document.getElementById('zoomImage').src = url;
-  document.getElementById('zoomCaption').textContent = name || '';
-  document.getElementById('zoomOverlay').classList.add('show');
-}
-function closeImageZoom(){
-  document.getElementById('zoomOverlay').classList.remove('show');
-}
 
 function ensureUserInfo(next){
   if(userInfo){ next(); return; }
