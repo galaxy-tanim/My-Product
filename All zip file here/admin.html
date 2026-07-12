@@ -303,7 +303,6 @@ async function loadPending(){
         <h3>${p.name}</h3>
         <div class="meta">
           <div><b>দাম:</b> ৳${p.price}${p.old_price ? ` (আগে ৳${p.old_price})` : ''}</div>
-          <div><b>সেলার যে Quantity দিয়েছে:</b> ${p.requested_stock ?? '—'}</div>
           <div><b>কালার:</b> ${(p.colors && p.colors.length) ? p.colors.join(', ') : '—'}</div>
           <div><b>বিবরণ:</b> ${p.descr || '—'}</div>
           <div><b>বিক্রেতা:</b> ${p.seller_name} | ${p.seller_phone}</div>
@@ -312,7 +311,7 @@ async function loadPending(){
         </div>
       </div>
       <div class="actions">
-        <input type="number" class="stock-input" placeholder="স্টক সংখ্যা" min="1" value="${p.requested_stock ?? 15}">
+        <input type="number" class="stock-input" placeholder="স্টক সংখ্যা" min="1" value="15">
         <button class="acc-btn">✅ Accept</button>
         <button class="rej-btn">❌ Reject</button>
       </div>`;

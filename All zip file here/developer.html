@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Habibur Rahaman Tanim - Founder & CEO | My Product</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%230b6fa3'/%3E%3Cstop offset='1' stop-color='%2379c9f2'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='32' cy='32' r='30' fill='url(%23g)'/%3E%3Ctext x='34' y='43' font-family='Arial,Helvetica,sans-serif' font-size='27' font-weight='800' fill='white' text-anchor='middle' transform='skewX(-9)' letter-spacing='-1'%3EMP%3C/text%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Baloo+Da+2:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --sky-1:#eaf7ff; --sky-2:#cdecff; --sky-3:#79c9f2; --sky-4:#1e9bd7; --sky-5:#0b6fa3;
+    --navy:#0b3a52; --coral:#ff6a3d; --coral-dark:#e04e22; --gray:#5b7686;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{ font-family:'Hind Siliguri',sans-serif; background:var(--sky-1); color:var(--navy); }
+  h1,h2,h3{ font-family:'Baloo Da 2','Hind Siliguri',sans-serif; }
+  a{ text-decoration:none; color:inherit; }
+  img{ max-width:100%; display:block; }
+
+  header{ background:linear-gradient(135deg,var(--sky-5),var(--sky-4)); padding:16px 18px; }
+  .top{ max-width:900px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; }
+  .brand{ color:#fff; font-weight:800; font-size:20px; display:flex; align-items:center; gap:8px; }
+  .back-btn{ background:rgba(255,255,255,0.18); color:#fff; padding:8px 16px; border-radius:30px; font-weight:600; font-size:13.5px; border:1.5px solid rgba(255,255,255,0.5); }
+  .back-btn:hover{ background:#fff; color:var(--sky-5); }
+
+  .hero{ background:linear-gradient(180deg,var(--sky-3),var(--sky-1)); padding:44px 18px 40px; text-align:center; }
+  .hero .avatar{
+    width:200px; height:200px; border-radius:50%; object-fit:cover; object-position:center 12%; margin:0 auto 18px;
+    border:5px solid #fff; box-shadow:0 12px 30px rgba(11,58,82,0.25); cursor:zoom-in;
+  }
+  .hero h1{ font-size:clamp(22px,4.5vw,30px); margin-bottom:6px; }
+  .hero .title{ color:var(--coral-dark); font-weight:700; font-size:15.5px; margin-bottom:14px; }
+  .hero .bio{ color:var(--navy); font-size:14.5px; max-width:560px; margin:0 auto; line-height:1.8; }
+
+  .wrap{ max-width:900px; margin:0 auto; padding:30px 18px 60px; }
+
+  .contact-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:34px; }
+  @media(max-width:640px){ .contact-grid{ grid-template-columns:repeat(2,1fr); } }
+  .contact-card{ background:#fff; border-radius:16px; padding:18px 14px; text-align:center; box-shadow:0 4px 12px rgba(11,58,82,0.08); transition:.2s; }
+  .contact-card:hover{ transform:translateY(-4px); box-shadow:0 10px 22px rgba(11,58,82,0.18); }
+  .contact-card .ico{ margin-bottom:8px; display:flex; align-items:center; justify-content:center; }
+  .contact-card .label{ font-size:12px; color:var(--gray); font-weight:600; margin-bottom:2px; }
+  .contact-card .value{ font-size:13px; color:var(--navy); font-weight:700; word-break:break-word; }
+  .contact-card.whatsapp .ico{ color:#25D366; }
+  .contact-card.phone .ico{ color:var(--sky-5); }
+  .contact-card.email .ico{ color:var(--coral-dark); }
+  .contact-card.facebook .ico{ color:#1877F2; }
+  .contact-card.instagram .ico{ color:#E1306C; }
+
+  .section-title{ font-size:19px; margin-bottom:16px; position:relative; padding-left:16px; }
+  .section-title::before{ content:''; position:absolute; left:0; top:2px; bottom:2px; width:6px; border-radius:4px; background:linear-gradient(180deg,var(--coral),var(--sky-4)); }
+
+  .gallery-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+  @media(max-width:640px){ .gallery-grid{ grid-template-columns:repeat(2,1fr); } }
+  .gallery-grid img{
+    width:100%; height:220px; object-fit:cover; border-radius:14px; cursor:zoom-in;
+    box-shadow:0 4px 12px rgba(11,58,82,0.1); transition:.25s;
+  }
+  .gallery-grid img:hover{ transform:scale(1.03); box-shadow:0 10px 20px rgba(11,58,82,0.2); }
+
+  /* ===== ZOOM LIGHTBOX ===== */
+  .zoom-overlay{
+    position:fixed; inset:0; background:rgba(11,58,82,0.92); display:none; align-items:center; justify-content:center;
+    z-index:1000; padding:24px; cursor:zoom-out;
+  }
+  .zoom-overlay.show{ display:flex; }
+  .zoom-overlay img{ max-width:100%; max-height:85vh; border-radius:14px; box-shadow:0 20px 60px rgba(0,0,0,0.5); cursor:default; }
+  .zoom-overlay .zoom-close{ position:absolute; top:18px; right:22px; color:#fff; font-size:30px; background:none; border:none; cursor:pointer; }
+  .zoom-overlay .zoom-nav{ position:absolute; top:50%; transform:translateY(-50%); color:#fff; font-size:34px; background:rgba(255,255,255,0.15); border:none; width:48px; height:48px; border-radius:50%; cursor:pointer; }
+  .zoom-overlay .zoom-prev{ left:18px; }
+  .zoom-overlay .zoom-next{ right:18px; }
+  .zoom-overlay .zoom-nav:hover{ background:rgba(255,255,255,0.3); }
+
+  footer{ text-align:center; padding:20px; color:var(--gray); font-size:12.5px; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="top">
+    <div class="brand">🛍️ My Product</div>
+    <a class="back-btn" href="index.html">← হোমপেজে ফিরে যান</a>
+  </div>
+</header>
+
+<section class="hero">
+  <img class="avatar" id="mainAvatar" src="assets/tanim-photo.jpg" alt="Habibur Rahaman Tanim">
+  <h1>Habibur Rahaman Tanim</h1>
+  <p class="title">Founder &amp; CEO — My Product</p>
+  <p class="bio">
+    আমি হাবিবুর রহমান তানিম, একজন Full Stack Web Developer এবং "My Product" এর প্রতিষ্ঠাতা। ওয়েব ডেভেলপমেন্ট ও প্রযুক্তির প্রতি ভালোবাসা থেকেই এই প্ল্যাটফর্মটি তৈরি করেছি, যেন সবাই সহজে অনলাইনে কেনাবেচা করতে পারে — নিরাপদ, স্বচ্ছ ও গ্রাহকবান্ধব উপায়ে। যেকোনো প্রশ্ন, মতামত বা সহযোগিতার জন্য নিচের যেকোনো মাধ্যমে সরাসরি যোগাযোগ করতে পারেন।
+  </p>
+</section>
+
+<main class="wrap">
+  <div class="contact-grid">
+    <a class="contact-card whatsapp" href="https://wa.me/8801851717924" target="_blank">
+      <div class="ico">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91C2.13 13.66 2.59 15.36 3.45 16.86L2.05 22L7.3 20.62C8.75 21.41 10.38 21.83 12.04 21.83C17.5 21.83 21.95 17.38 21.95 11.92C21.95 9.27 20.92 6.78 19.05 4.91C17.18 3.03 14.69 2 12.04 2ZM12.04 20.15C10.56 20.15 9.11 19.75 7.85 19L7.55 18.82L4.43 19.65L5.27 16.61L5.08 16.29C4.25 15 3.81 13.47 3.81 11.91C3.81 7.37 7.5 3.68 12.05 3.68C14.25 3.68 16.32 4.54 17.87 6.09C19.42 7.64 20.27 9.71 20.27 11.92C20.26 16.46 16.57 20.15 12.04 20.15ZM16.56 13.99C16.32 13.87 15.13 13.28 14.9 13.2C14.68 13.11 14.52 13.07 14.35 13.31C14.19 13.55 13.72 14.11 13.58 14.27C13.44 14.44 13.3 14.46 13.06 14.34C12.82 14.22 12.04 13.96 11.11 13.14C10.39 12.5 9.9 11.71 9.76 11.47C9.62 11.23 9.74 11.1 9.86 10.98C9.97 10.87 10.11 10.68 10.24 10.54C10.36 10.4 10.4 10.29 10.49 10.13C10.57 9.97 10.53 9.83 10.47 9.71C10.41 9.59 9.92 8.39 9.72 7.9C9.52 7.42 9.32 7.49 9.17 7.48C9.03 7.47 8.87 7.47 8.7 7.47C8.54 7.47 8.28 7.53 8.05 7.77C7.83 8.01 7.19 8.6 7.19 9.8C7.19 11 8.07 12.16 8.19 12.32C8.31 12.48 9.91 14.97 12.37 16.02C12.96 16.27 13.42 16.42 13.78 16.53C14.37 16.72 14.91 16.69 15.34 16.63C15.82 16.56 16.83 16.02 17.03 15.44C17.24 14.86 17.24 14.36 17.18 14.26C17.12 14.15 16.96 14.09 16.72 13.97" fill="#25D366"/>
+        </svg>
+      </div>
+      <div class="label">WhatsApp</div>
+      <div class="value">01851717924</div>
+    </a>
+    <a class="contact-card phone" href="tel:+8801851717924">
+      <div class="ico">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M6.62 10.79C8.06 13.62 10.38 15.93 13.21 17.38L15.41 15.18C15.68 14.91 16.08 14.82 16.43 14.94C17.55 15.31 18.76 15.51 20 15.51C20.55 15.51 21 15.96 21 16.51V20C21 20.55 20.55 21 20 21C10.61 21 3 13.39 3 4C3 3.45 3.45 3 4 3H7.5C8.05 3 8.5 3.45 8.5 4C8.5 5.25 8.7 6.45 9.07 7.57C9.18 7.92 9.1 8.31 8.82 8.59L6.62 10.79Z" fill="#0b6fa3"/>
+        </svg>
+      </div>
+      <div class="label">Phone</div>
+      <div class="value">01851717924</div>
+    </a>
+    <a class="contact-card email" href="mailto:tanimtanvirsafari@gmail.com">
+      <div class="ico">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="2.5" y="4.5" width="19" height="15" rx="2.3" stroke="#e04e22" stroke-width="1.7"/>
+          <path d="M4 6.5L12 12.5L20 6.5" stroke="#e04e22" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="label">Email</div>
+      <div class="value">tanimtanvirsafari@gmail.com</div>
+    </a>
+    <a class="contact-card facebook" href="https://www.facebook.com/share/1DrZtz5bQ6/" target="_blank">
+      <div class="ico">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="12" cy="12" r="10.5" fill="#1877F2"/>
+          <path d="M15.5 12.5H13.6V19H10.9V12.5H9.5V10.1H10.9V8.5C10.9 7.3 11.5 5.4 13.6 5.4L15.5 5.4V7.7C15.5 7.7 14.3 7.7 14.1 7.7C13.9 7.7 13.6 7.9 13.6 8.3V10.1H15.6L15.5 12.5Z" fill="#ffffff"/>
+        </svg>
+      </div>
+      <div class="label">Facebook</div>
+      <div class="value">Habibur Tanim</div>
+    </a>
+    <a class="contact-card instagram" href="https://www.instagram.com/habibur_tanim/" target="_blank" style="grid-column: span 1;">
+      <div class="ico">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="2.5" y="2.5" width="19" height="19" rx="5.5" stroke="#E1306C" stroke-width="1.8"/>
+          <circle cx="12" cy="12" r="4.3" stroke="#E1306C" stroke-width="1.8"/>
+          <circle cx="17.3" cy="6.7" r="1.15" fill="#E1306C"/>
+        </svg>
+      </div>
+      <div class="label">Instagram</div>
+      <div class="value">@habibur_tanim</div>
+    </a>
+  </div>
+
+  <h2 class="section-title">📸 গ্যালারি</h2>
+  <div class="gallery-grid" id="galleryGrid"></div>
+</main>
+
+<footer>© 2026 My Product. সর্বস্বত্ব সংরক্ষিত।</footer>
+
+<!-- ===== ZOOM LIGHTBOX ===== -->
+<div class="zoom-overlay" id="zoomOverlay">
+  <button class="zoom-close" onclick="closeZoom()">✕</button>
+  <button class="zoom-nav zoom-prev" onclick="navZoom(-1)">‹</button>
+  <img id="zoomImage" src="" alt="">
+  <button class="zoom-nav zoom-next" onclick="navZoom(1)">›</button>
+</div>
+
+<script>
+/* ================= GALLERY ================= */
+/* নতুন ছবি যোগ করতে চাইলে এখানে একটা লাইন যোগ করো (ফাইলটা assets/gallery ফোল্ডারে রাখতে হবে) */
+const galleryImages = [
+  "assets/tanim-photo.jpg",
+  "assets/gallery/tanim-1.jpg",
+  "assets/gallery/tanim-2.jpg",
+  "assets/gallery/tanim-3.jpg",
+  "assets/gallery/tanim-4.jpg",
+  "assets/gallery/tanim-5.jpg",
+  "assets/gallery/tanim-6.jpg",
+  // "assets/gallery/tanim-7.jpg", // <-- নতুন ছবি এভাবে যোগ করো
+];
+
+const galleryGrid = document.getElementById('galleryGrid');
+galleryImages.forEach((src, i)=>{
+  const img = document.createElement('img');
+  img.src = src;
+  img.loading = 'lazy';
+  img.onclick = ()=>openZoom(i);
+  galleryGrid.appendChild(img);
+});
+document.getElementById('mainAvatar').onclick = ()=>openZoom(0);
+
+/* ================= ZOOM LIGHTBOX ================= */
+let currentZoomIndex = 0;
+function openZoom(i){
+  currentZoomIndex = i;
+  document.getElementById('zoomImage').src = galleryImages[i];
+  document.getElementById('zoomOverlay').classList.add('show');
+}
+function closeZoom(){
+  document.getElementById('zoomOverlay').classList.remove('show');
+}
+function navZoom(dir){
+  currentZoomIndex = (currentZoomIndex + dir + galleryImages.length) % galleryImages.length;
+  document.getElementById('zoomImage').src = galleryImages[currentZoomIndex];
+}
+document.getElementById('zoomOverlay').addEventListener('click', (e)=>{
+  if(e.target.id === 'zoomOverlay') closeZoom();
+});
+</script>
+</body>
+</html>

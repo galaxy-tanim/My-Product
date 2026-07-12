@@ -1,6 +1,15 @@
 <!DOCTYPE html>
 <html lang="bn">
 <head>
+ <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-NTN28EG57K"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-NTN28EG57K');
+  </script>
+  
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>My Product - বিশ্বস্ত অনলাইন শপ</title>
@@ -171,6 +180,16 @@
   .card .img-wrap svg{ width:52%; height:52%; transition:.35s; }
   .card:hover .img-wrap svg{ transform:scale(1.12) rotate(-2deg); }
   .card .img-wrap img{ width:100%; height:100%; object-fit:cover; transition:.35s; }
+
+  /* ===== IMAGE ZOOM LIGHTBOX ===== */
+  .zoom-overlay{
+    position:fixed; inset:0; background:rgba(11,58,82,0.9); display:none; align-items:center; justify-content:center;
+    z-index:1000; padding:24px; cursor:zoom-out;
+  }
+  .zoom-overlay.show{ display:flex; }
+  .zoom-overlay img{ max-width:100%; max-height:85vh; border-radius:14px; box-shadow:0 20px 60px rgba(0,0,0,0.5); }
+  .zoom-overlay .zoom-caption{ position:absolute; bottom:26px; left:0; right:0; text-align:center; color:#fff; font-weight:600; font-size:15px; }
+  .zoom-overlay .zoom-close{ position:absolute; top:18px; right:22px; color:#fff; font-size:30px; background:none; border:none; cursor:pointer; }
   .card:hover .img-wrap img{ transform:scale(1.08); }
   .discount-tag{
     position:absolute; top:10px; right:10px; background:var(--red); color:#fff; font-size:12px; font-weight:700;
@@ -301,7 +320,7 @@
     <div class="sell-banner">
       <div>
         <h2>আপনার পণ্য বিক্রি করতে চান?</h2>
-        <p>খুব সহজে আপনার পণ্যের তথ্য জমা দিন, আমরা WhatsApp-এ যোগাযোগ করে বাকি প্রক্রিয়া সম্পন্ন করবো।</p>
+        <p>খুব সহজে আপনার পণ্যের তথ্য জমা দিন, আমরা বাকি প্রক্রিয়া সম্পন্ন করবো।</p>
       </div>
       <button class="btn-main" onclick="openSellFlow()">এখনই বিক্রি করুন →</button>
     </div>
@@ -309,7 +328,12 @@
 
 </main>
 
-<a class="fab" href="https://wa.me/8801851717924" target="_blank">💬 Developer</a>
+<a class="fab" href="https://wa.me/8801851717924" target="_blank">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91C2.13 13.66 2.59 15.36 3.45 16.86L2.05 22L7.3 20.62C8.75 21.41 10.38 21.83 12.04 21.83C17.5 21.83 21.95 17.38 21.95 11.92C21.95 9.27 20.92 6.78 19.05 4.91C17.18 3.03 14.69 2 12.04 2ZM12.04 20.15C10.56 20.15 9.11 19.75 7.85 19L7.55 18.82L4.43 19.65L5.27 16.61L5.08 16.29C4.25 15 3.81 13.47 3.81 11.91C3.81 7.37 7.5 3.68 12.05 3.68C14.25 3.68 16.32 4.54 17.87 6.09C19.42 7.64 20.27 9.71 20.27 11.92C20.26 16.46 16.57 20.15 12.04 20.15ZM16.56 13.99C16.32 13.87 15.13 13.28 14.9 13.2C14.68 13.11 14.52 13.07 14.35 13.31C14.19 13.55 13.72 14.11 13.58 14.27C13.44 14.44 13.3 14.46 13.06 14.34C12.82 14.22 12.04 13.96 11.11 13.14C10.39 12.5 9.9 11.71 9.76 11.47C9.62 11.23 9.74 11.1 9.86 10.98C9.97 10.87 10.11 10.68 10.24 10.54C10.36 10.4 10.4 10.29 10.49 10.13C10.57 9.97 10.53 9.83 10.47 9.71C10.41 9.59 9.92 8.39 9.72 7.9C9.52 7.42 9.32 7.49 9.17 7.48C9.03 7.47 8.87 7.47 8.7 7.47C8.54 7.47 8.28 7.53 8.05 7.77C7.83 8.01 7.19 8.6 7.19 9.8C7.19 11 8.07 12.16 8.19 12.32C8.31 12.48 9.91 14.97 12.37 16.02C12.96 16.27 13.42 16.42 13.78 16.53C14.37 16.72 14.91 16.69 15.34 16.63C15.82 16.56 16.83 16.02 17.03 15.44C17.24 14.86 17.24 14.36 17.18 14.26C17.12 14.15 16.96 14.09 16.72 13.97" fill="#ffffff"/>
+  </svg>
+  Developer
+</a>
 
 <footer>
   <div class="foot-grid">
@@ -382,7 +406,7 @@
     <form id="sellForm" onsubmit="return submitSell(event)">
       <div class="field"><label>পণ্যের নাম</label><input type="text" id="sell_pname" required placeholder="যেমনঃ নতুন শাড়ি"></div>
       <div class="field"><label>বিভাগ (Category)</label>
-        <select id="sell_category">
+        <select id="sell_category" onchange="updateSellCategoryFields()">
           <option value="tshirt">টি-শার্ট</option>
           <option value="mens">পুরুষদের ফ্যাশন</option>
           <option value="womens">মহিলাদের ফ্যাশন</option>
@@ -398,6 +422,18 @@
           <option value="book">বই</option>
           <option value="toys">খেলনা</option>
         </select>
+      </div>
+      <div class="field" id="sellGenderField" style="display:none;">
+        <label>কাদের জন্য?</label>
+        <select id="sell_gender">
+          <option value="boy">ছেলে</option>
+          <option value="girl">মেয়ে</option>
+          <option value="kids">শিশু</option>
+        </select>
+      </div>
+      <div class="field" id="sellBrandField" style="display:none;">
+        <label>ব্র্যান্ড/কোম্পানি</label>
+        <select id="sell_brand"></select>
       </div>
       <div class="field">
         <label>পণ্যের কালার (একটি বা একাধিক সিলেক্ট করো)</label>
@@ -417,6 +453,13 @@
       <p class="whatsapp-note">সাবমিট করলে WhatsApp (01851717924) খুলে যাবে পণ্যের তথ্যসহ।</p>
     </form>
   </div>
+</div>
+
+<!-- ===== IMAGE ZOOM LIGHTBOX ===== -->
+<div class="zoom-overlay" id="zoomOverlay" onclick="closeImageZoom()">
+  <button class="zoom-close" onclick="closeImageZoom()">✕</button>
+  <img id="zoomImage" src="" alt="">
+  <div class="zoom-caption" id="zoomCaption"></div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -452,18 +495,18 @@ const ICONS = {
 /* category master list — key MUST exist in ICONS and matches section id "sec-<key>"
    aliases[] = English/alt keywords so search works even when typed in English */
 const categories = [
-  {name:"টি-শার্ট", key:"tshirt", icon:"tshirt_boy", bg:"#ffe3da", aliases:["tshirt","t-shirt","tee","shirt"]},
-  {name:"পুরুষদের ফ্যাশন", key:"mens", icon:"mens", bg:"#e2ebff", aliases:["men","mens","man","blazer","panjabi"]},
-  {name:"মহিলাদের ফ্যাশন", key:"womens", icon:"womens", bg:"#fbe2f3", aliases:["women","womens","woman","dress","gown","kurti","lady","ladies"]},
-  {name:"শাড়ি", key:"saree", icon:"saree", bg:"#efe3ff", aliases:["saree","sari"]},
-  {name:"থ্রি পিস", key:"threepiece", icon:"threepiece", bg:"#dcf7f2", aliases:["three piece","threepiece","salwar","kameez","suit"]},
-  {name:"প্যান্ট", key:"pant", icon:"pant", bg:"#e4e8f5", aliases:["pant","pants","trouser","jeans","denim","palazzo"]},
-  {name:"মোবাইল", key:"mobile", icon:"mobile", bg:"#dff0ff", aliases:["mobile","phone","smartphone","cellphone"], brands:["সব","Vivo","Realme","Samsung","iPhone","Xiaomi","Oppo"]},
-  {name:"ল্যাপটপ", key:"laptop", icon:"laptop", bg:"#e6f0ff", aliases:["laptop","notebook"], brands:["সব","HP","Lenovo","Dell","Apple","Asus"]},
-  {name:"ইলেকট্রনিক্স", key:"electronics", icon:"electronics", bg:"#fff4d6", aliases:["electronics","gadget","headphone","earbuds","speaker","powerbank","tv","router"]},
-  {name:"কম্পিউটার", key:"computer", icon:"computer", bg:"#e3f7ec", aliases:["computer","pc","desktop","monitor"]},
-  {name:"ঘড়ি ও আনুষাঙ্গিক", key:"watch", icon:"watch", bg:"#fff0d9", aliases:["watch","clock","wristwatch"]},
-  {name:"জুতা", key:"shoes", icon:"shoes", bg:"#ffe6da", aliases:["shoes","shoe","sneaker","sandal","loafer"]},
+  {name:"টি-শার্ট", key:"tshirt", icon:"tshirt_boy", bg:"#ffe3da", aliases:["tshirt","t-shirt","tee","shirt"], brands:["সব","Gucci","Nike","Adidas","Easy","Bunon", "অন্যান্য"]},
+  {name:"পুরুষদের ফ্যাশন", key:"mens", icon:"mens", bg:"#e2ebff", aliases:["men","mens","man","blazer","panjabi"], brands:["সব","Zara","Yellow","Ecstasy","Easy","অন্যান্য"]},
+  {name:"মহিলাদের ফ্যাশন", key:"womens", icon:"womens", bg:"#fbe2f3", aliases:["women","womens","woman","dress","gown","kurti","lady","ladies"], brands:["সব","Aarong","Kay Kraft","Rang","Zara","অন্যান্য"]},
+  {name:"শাড়ি", key:"saree", icon:"saree", bg:"#efe3ff", aliases:["saree","sari"], brands:["সব","Aarong","Prabartana","Deshi Dosh","অন্যান্য"]},
+  {name:"থ্রি পিস", key:"threepiece", icon:"threepiece", bg:"#dcf7f2", aliases:["three piece","threepiece","salwar","kameez","suit"], brands:["সব","Aarong","Kay Kraft","Rang","অন্যান্য"]},
+  {name:"প্যান্ট", key:"pant", icon:"pant", bg:"#e4e8f5", aliases:["pant","pants","trouser","jeans","denim","palazzo"], brands:["সব","Levis","Zara","Yellow","অন্যান্য"]},
+  {name:"মোবাইল", key:"mobile", icon:"mobile", bg:"#dff0ff", aliases:["mobile","phone","smartphone","cellphone"], brands:["সব","Vivo","Realme","Samsung","iPhone","Xiaomi","Oppo","অন্যান্য"]},
+  {name:"ল্যাপটপ", key:"laptop", icon:"laptop", bg:"#e6f0ff", aliases:["laptop","notebook"], brands:["সব","HP","Lenovo","Dell","Apple","Asus","অন্যান্য"]},
+  {name:"ইলেকট্রনিক্স", key:"electronics", icon:"electronics", bg:"#fff4d6", aliases:["electronics","gadget","headphone","earbuds","speaker","powerbank","tv","router"], brands:["সব","Sony","JBL","Xiaomi","Walton","অন্যান্য"]},
+  {name:"কম্পিউটার", key:"computer", icon:"computer", bg:"#e3f7ec", aliases:["computer","pc","desktop","monitor"], brands:["সব","Dell","HP","Asus","Custom Build","অন্যান্য"]},
+  {name:"ঘড়ি ও আনুষাঙ্গিক", key:"watch", icon:"watch", bg:"#fff0d9", aliases:["watch","clock","wristwatch"], brands:["সব","Casio","Fossil","Smart Watch","Local","অন্যান্য"]},
+  {name:"জুতা", key:"shoes", icon:"shoes", bg:"#ffe6da", aliases:["shoes","shoe","sneaker","sandal","loafer"], brands:["সব","Nike","Adidas","Bata","Apex","অন্যান্য"]},
   {name:"বই", key:"book", icon:"book", bg:"#f0e9da", aliases:["book","books","novel","story"]},
   {name:"খেলনা", key:"toys", icon:"toys", bg:"#f3e6d2", aliases:["toy","toys","kids toy"]},
 ];
@@ -659,7 +702,7 @@ function productCard(p, catBg, categoryKey){
   const cat = categories.find(c=>c.key===categoryKey);
   const searchStr = [p.name, p.brand||'', cat ? cat.name : '', ...(cat ? cat.aliases : [])].join(' ').toLowerCase();
   const media = p.image_url
-    ? `<img src="${p.image_url}" alt="${p.name}" style="width:100%;height:100%;object-fit:cover;" loading="lazy">`
+    ? `<img src="${p.image_url}" alt="${p.name}" class="real-photo" style="width:100%;height:100%;object-fit:contain;cursor:zoom-in;" loading="lazy">`
     : (ICONS[p.icon] || ICONS['toys']);
   const outOfStock = !p.stock || p.stock <= 0;
   const card = document.createElement('div');
@@ -682,6 +725,8 @@ function productCard(p, catBg, categoryKey){
   if(!outOfStock){
     card.querySelector('.order-btn').onclick = ()=>startOrder(p, categoryKey);
   }
+  const photoEl = card.querySelector('.real-photo');
+  if(photoEl){ photoEl.onclick = ()=>openImageZoom(p.image_url, p.name); }
   return card;
 }
 
@@ -705,21 +750,40 @@ categories.forEach(c=>{
   grid.dataset.activeFilter = 'all';
 
   if(c.key === 'tshirt'){
-    const filterRow = document.createElement('div');
-    filterRow.className='filter-row';
+    const genderRow = document.createElement('div');
+    genderRow.className='filter-row';
     Object.keys(genderLabels).forEach(g=>{
       const chip = document.createElement('button');
       chip.className = 'chip' + (g==='all' ? ' active':'');
       chip.textContent = genderLabels[g];
       chip.onclick = ()=>{
-        filterRow.querySelectorAll('.chip').forEach(ch=>ch.classList.remove('active'));
+        genderRow.querySelectorAll('.chip').forEach(ch=>ch.classList.remove('active'));
         chip.classList.add('active');
         grid.dataset.activeFilter = g;
         renderCategoryGrid('tshirt', 'gender');
       };
-      filterRow.appendChild(chip);
+      genderRow.appendChild(chip);
     });
-    sec.appendChild(filterRow);
+    sec.appendChild(genderRow);
+
+    if(c.brands){
+      const brandRow = document.createElement('div');
+      brandRow.className='filter-row';
+      grid.dataset.activeBrand = 'all';
+      c.brands.forEach(b=>{
+        const chip = document.createElement('button');
+        chip.className = 'chip' + (b==='সব' ? ' active':'');
+        chip.textContent = b;
+        chip.onclick = ()=>{
+          brandRow.querySelectorAll('.chip').forEach(ch=>ch.classList.remove('active'));
+          chip.classList.add('active');
+          grid.dataset.activeBrand = b==='সব' ? 'all' : b;
+          renderCategoryGrid('tshirt', 'gender');
+        };
+        brandRow.appendChild(chip);
+      });
+      sec.appendChild(brandRow);
+    }
   } else if(c.brands){
     const filterRow = document.createElement('div');
     filterRow.className='filter-row';
@@ -749,9 +813,22 @@ function renderCategoryGrid(key, filterField){
   const cat = categories.find(c=>c.key===key);
   const grid = document.getElementById('grid-'+key);
   if(!grid || !cat) return;
-  const activeVal = grid.dataset.activeFilter || 'all';
   let list = PRODUCTS_BY_CAT[key] || [];
-  if(filterField && activeVal !== 'all') list = list.filter(p=>p[filterField]===activeVal);
+
+  const activeVal = grid.dataset.activeFilter || 'all';
+  if(filterField && activeVal !== 'all'){
+    const activeNorm = activeVal.trim().toLowerCase();
+    list = list.filter(p => (p[filterField] || '').toString().trim().toLowerCase() === activeNorm);
+  }
+  // T-shirt এ gender ফিল্টারের পাশাপাশি ব্র্যান্ড ফিল্টারও একসাথে প্রয়োগ হয়
+  if(key === 'tshirt'){
+    const activeBrand = grid.dataset.activeBrand || 'all';
+    if(activeBrand !== 'all'){
+      const brandNorm = activeBrand.trim().toLowerCase();
+      list = list.filter(p => (p.brand || '').toString().trim().toLowerCase() === brandNorm);
+    }
+  }
+
   grid.innerHTML = '';
   if(list.length === 0){
     grid.innerHTML = `<p style="grid-column:1/-1;color:var(--gray);text-align:center;padding:24px 10px;">এখনো এই বিভাগে কোনো পণ্য যোগ করা হয়নি।</p>`;
@@ -801,6 +878,15 @@ let currentOrderCategoryKey = null;
 
 function openOverlay(id){ document.getElementById(id).classList.add('show'); }
 function closeOverlay(id){ document.getElementById(id).classList.remove('show'); }
+
+function openImageZoom(url, name){
+  document.getElementById('zoomImage').src = url;
+  document.getElementById('zoomCaption').textContent = name || '';
+  document.getElementById('zoomOverlay').classList.add('show');
+}
+function closeImageZoom(){
+  document.getElementById('zoomOverlay').classList.remove('show');
+}
 
 function ensureUserInfo(next){
   if(userInfo){ next(); return; }
@@ -917,6 +1003,28 @@ function previewSellImage(e){
   reader.readAsDataURL(file);
 }
 
+/* ================= SELL FORM: category-driven gender/brand fields ================= */
+function updateSellCategoryFields(){
+  const category = document.getElementById('sell_category').value;
+  const cat = categories.find(c=>c.key===category);
+
+  const genderField = document.getElementById('sellGenderField');
+  genderField.style.display = (category === 'tshirt') ? '' : 'none';
+
+  const brandField = document.getElementById('sellBrandField');
+  const brandSelect = document.getElementById('sell_brand');
+  if(cat && cat.brands && cat.brands.length){
+    brandField.style.display = '';
+    // "সব" শুধু ফিল্টার চিপের জন্য, প্রোডাক্টের নিজের ব্র্যান্ড হিসেবে বাদ
+    const options = cat.brands.filter(b=>b!=='সব');
+    brandSelect.innerHTML = options.map(b=>`<option value="${b}">${b}</option>`).join('');
+  } else {
+    brandField.style.display = 'none';
+    brandSelect.innerHTML = '';
+  }
+}
+updateSellCategoryFields(); // প্রথমবার পেজ লোড হওয়ার সময় ডিফল্ট ক্যাটাগরির (T-shirt) ফিল্ড ঠিক করে দেয়
+
 function openSellFlow(){
   ensureUserInfo(()=>{ openOverlay('sellOverlay'); });
 }
@@ -938,6 +1046,14 @@ async function submitSell(e){
   const fileInput = document.getElementById('sell_image_file');
   const file = fileInput.files[0];
 
+  const gender = (category === 'tshirt') ? document.getElementById('sell_gender').value : null;
+  const genderLabelText = gender ? genderLabels[gender] : '';
+  const brandField = document.getElementById('sellBrandField');
+  const brand = (brandField.style.display !== 'none') ? document.getElementById('sell_brand').value : null;
+
+  const genderIconMap = {boy:'tshirt_boy', girl:'tshirt_girl', kids:'tshirt_kids'};
+  const icon = (category === 'tshirt') ? (genderIconMap[gender] || 'tshirt_boy') : category;
+
   let imageUrl = null;
   try{
     if(file){
@@ -951,7 +1067,9 @@ async function submitSell(e){
     const { error: insErr } = await sb.from('products').insert({
       name: pname,
       category: category,
-      icon: (category === 'tshirt' ? 'tshirt_boy' : category),
+      icon: icon,
+      brand: brand,
+      gender: gender,
       old_price: oldPrice ? Number(oldPrice) : null,
       price: Number(price),
       colors: selectedColors.length ? selectedColors : null,
@@ -971,6 +1089,7 @@ async function submitSell(e){
 
   const msg = `আসসালামু আলাইকুম, আমি একটি পণ্য বিক্রি করতে চাই (Admin panel এ Pending হিসেবে জমা হয়েছে):\n\n`+
     `পণ্যের নাম: ${pname}\nবিভাগ: ${categoryLabel}\n`+
+    `${brand ? `ব্র্যান্ড: ${brand}\n` : ''}${genderLabelText ? `কাদের জন্য: ${genderLabelText}\n` : ''}`+
     `${oldPrice ? `আসল দাম: ৳${oldPrice}\n` : ''}বিক্রয় মূল্য: ৳${price}\n`+
     `কালার অপশন: ${coloursText}\n`+
     `বিবরণ: ${desc}\n\n`+
