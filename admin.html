@@ -59,7 +59,7 @@
   .pcard .meta{ font-size:13.5px; color:var(--gray); line-height:1.7; }
   .pcard .meta b{ color:var(--navy); }
   .pcard .actions{ display:flex; flex-direction:column; gap:8px; align-items:stretch; flex:none; min-width:150px; }
-  .acc-btn, .rej-btn, .save-btn, .del-btn{ padding:9px 16px; border-radius:10px; font-weight:700; font-size:13.5px; border:none; cursor:pointer; font-family:inherit; }
+  .acc-btn, .rej-btn, .save-btn, .del-btn, .featured-btn{ padding:9px 16px; border-radius:10px; font-weight:700; font-size:13.5px; border:none; cursor:pointer; font-family:inherit; }
   .acc-btn{ background:var(--green); color:#fff; }
   .acc-btn:hover{ background:#178a56; }
   .rej-btn, .del-btn{ background:var(--red); color:#fff; }
@@ -138,6 +138,18 @@ const categoryNames = {
   electronics:"ইলেকট্রনিক্স", computer:"কম্পিউটার", watch:"ঘড়ি ও আনুষাঙ্গিক",
   shoes:"জুতা", book:"বই", toys:"খেলনা"
 };
+
+const PAY_TYPE_LABELS_ADMIN = {send_money:'Send Money', cash_out:'Cash Out', payment:'Payment'};
+function formatPaymentInfo(pm){
+  if(!pm) return 'ক্যাশ অন ডেলিভারি';
+  const parts = [];
+  parts.push(pm.cod ? 'COD ✓' : 'COD ✗');
+  if(pm.bkash) parts.push(`bKash: ${pm.bkash.number} (${(pm.bkash.types||[]).map(t=>PAY_TYPE_LABELS_ADMIN[t]).join('/')})`);
+  if(pm.nagad) parts.push(`Nagad: ${pm.nagad.number} (${(pm.nagad.types||[]).map(t=>PAY_TYPE_LABELS_ADMIN[t]).join('/')})`);
+  if(pm.rocket) parts.push(`Rocket: ${pm.rocket.number} (${(pm.rocket.types||[]).map(t=>PAY_TYPE_LABELS_ADMIN[t]).join('/')})`);
+  if(pm.bank) parts.push(`ব্যাংক: ${pm.bank.details}`);
+  return parts.join(' | ');
+}
 
 /* একই ডেমো ক্যাটালগ যা index.html এ আছে — শুধু "ডেমো প্রোডাক্ট লোড করো" বাটনের জন্য */
 const SEED_DATA = {
@@ -305,7 +317,8 @@ async function loadPending(){
           <div><b>দাম:</b> ৳${p.price}${p.old_price ? ` (আগে ৳${p.old_price})` : ''}</div>
           <div><b>সেলার যে Quantity দিয়েছে:</b> ${p.requested_stock ?? '—'}</div>
           <div><b>কালার:</b> ${(p.colors && p.colors.length) ? p.colors.join(', ') : '—'}</div>
-          <div><b>বিবরণ:</b> ${p.descr || '—'}</div>
+          <div><b>বিবরণ/গ্যারান্টি-ওয়ারেন্টি:</b> ${p.descr || '—'}</div>
+          <div><b>পেমেন্ট পদ্ধতি:</b> ${formatPaymentInfo(p.payment_methods)}</div>
           <div><b>বিক্রেতা:</b> ${p.seller_name} | ${p.seller_phone}</div>
           <div><b>এনআইডি:</b> ${p.seller_nid}</div>
           <div><b>ঠিকানা:</b> ${p.seller_address}</div>
@@ -353,10 +366,12 @@ async function loadManageList(){
   data.forEach(p=>{
     const el = document.createElement('div');
     el.className='pcard';
+    const isFeatured = !!p.featured;
     el.innerHTML = `
       ${p.image_url ? `<img class="thumb" src="${p.image_url}" alt="${p.name}">` : `<div class="thumb-fallback">📦</div>`}
       <div class="info">
         <span class="badge">${categoryNames[p.category] || p.category}</span>
+        ${isFeatured ? `<span class="badge" style="background:#fff3cd;color:#a15c00;margin-left:6px;">⭐ ব্যানারে আছে</span>` : ''}
         <h3>${p.name}</h3>
         <div class="meta"><div><b>দাম:</b> ৳${p.price}${p.old_price ? ` (আগে ৳${p.old_price})` : ''}</div></div>
       </div>
@@ -364,6 +379,7 @@ async function loadManageList(){
         <label style="font-size:12.5px;font-weight:600;">স্টক সংখ্যা</label>
         <input type="number" class="stock-input" value="${p.stock}" min="0">
         <button class="save-btn">💾 সেভ করো</button>
+        <button class="featured-btn" style="background:${isFeatured ? '#a15c00' : '#f5b301'};color:#fff;">${isFeatured ? '★ ব্যানার থেকে সরাও' : '☆ ব্যানারে যোগ করো'}</button>
         <button class="del-btn">🗑️ ডিলিট</button>
       </div>`;
     el.querySelector('.save-btn').onclick = async ()=>{
@@ -372,6 +388,11 @@ async function loadManageList(){
       const { error } = await sb.from('products').update({ stock:newStock }).eq('id', p.id);
       if(error) alert('ব্যর্থ: '+error.message);
       else { refreshStats(); alert('স্টক আপডেট হয়ে গেছে ✅'); }
+    };
+    el.querySelector('.featured-btn').onclick = async ()=>{
+      const { error } = await sb.from('products').update({ featured: !isFeatured }).eq('id', p.id);
+      if(error) alert('ব্যর্থ: '+error.message);
+      else loadManageList();
     };
     el.querySelector('.del-btn').onclick = async ()=>{
       if(!confirm(`"${p.name}" পণ্যটি স্থায়ীভাবে মুছে ফেলতে চাও?`)) return;

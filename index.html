@@ -94,6 +94,30 @@
     #clearSearchBtn{ flex:0 0 100%; order:4; justify-content:center; }
   }
 
+  /* ===== BANNER CAROUSEL (admin-selected featured products) ===== */
+  .banner-carousel{ position:relative; width:100%; overflow:hidden; }
+  .banner-track{ position:relative; width:100%; height:clamp(160px,28vw,280px); }
+  .banner-slide{
+    position:absolute; inset:0; display:flex; align-items:center; justify-content:space-between;
+    padding:20px 28px; opacity:0; transition:opacity .6s ease; pointer-events:none;
+    color:#fff; overflow:hidden;
+  }
+  .banner-slide.active{ opacity:1; pointer-events:auto; }
+  .banner-slide .b-text{ position:relative; z-index:2; max-width:60%; }
+  .banner-slide .b-discount{
+    display:inline-block; background:var(--red); color:#fff; font-weight:800; font-size:clamp(13px,2.2vw,17px);
+    padding:5px 14px; border-radius:30px; margin-bottom:10px;
+  }
+  .banner-slide .b-name{ font-size:clamp(17px,3.4vw,28px); font-weight:800; margin-bottom:8px; line-height:1.25; font-family:'Baloo Da 2','Hind Siliguri',sans-serif; }
+  .banner-slide .b-price{ font-size:clamp(15px,2.6vw,22px); font-weight:700; }
+  .banner-slide .b-price .old{ text-decoration:line-through; opacity:.75; font-weight:500; font-size:.8em; margin-right:8px; }
+  .banner-slide .b-media{ position:relative; z-index:2; width:clamp(90px,22vw,190px); height:clamp(90px,22vw,190px); flex:none; display:flex; align-items:center; justify-content:center; }
+  .banner-slide .b-media img{ width:100%; height:100%; object-fit:contain; filter:drop-shadow(0 10px 18px rgba(0,0,0,0.3)); }
+  .banner-slide .b-media svg{ width:80%; height:80%; }
+  .banner-dots{ display:flex; justify-content:center; gap:6px; padding:10px 0; background:var(--sky-1); }
+  .banner-dot{ width:8px; height:8px; border-radius:50%; background:var(--sky-2); cursor:pointer; transition:.2s; }
+  .banner-dot.active{ background:var(--sky-4); width:22px; border-radius:5px; }
+
   /* ===== HERO ===== */
   .hero{
     background: linear-gradient(180deg, var(--sky-3), var(--sky-1));
@@ -257,6 +281,27 @@
   .color-check-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:6px 10px; }
   .color-check-grid label{ display:flex; align-items:center; gap:6px; font-weight:500; font-size:13.5px; color:var(--navy); margin:0; cursor:pointer; }
   .color-check-grid input[type="checkbox"]{ width:16px; height:16px; accent-color:var(--sky-4); cursor:pointer; }
+
+  /* ===== PAYMENT METHOD FIELDS (sell form) ===== */
+  .pay-method-box{ background:var(--sky-1); border:1.5px solid var(--sky-2); border-radius:12px; padding:12px 14px; margin-bottom:10px; }
+  .pay-method-row input[type="text"]{
+    width:100%; padding:9px 12px; border:1.6px solid var(--sky-2); border-radius:10px; font-family:inherit;
+    font-size:14px; outline:none; margin-bottom:8px;
+  }
+  .pay-method-row input[type="text"]:focus{ border-color:var(--sky-4); }
+  .pay-type-row{ display:flex; gap:14px; flex-wrap:wrap; }
+  .pay-type-row label{ display:flex; align-items:center; gap:5px; font-size:13px; font-weight:600; color:var(--navy); cursor:pointer; }
+  .pay-type-row input{ width:15px; height:15px; accent-color:var(--sky-4); cursor:pointer; }
+
+  /* ===== PAYMENT METHOD SELECTION (order form) ===== */
+  .pay-option{ display:flex; align-items:flex-start; gap:10px; background:#fff; border:1.6px solid var(--sky-2); border-radius:12px; padding:11px 13px; margin-bottom:9px; cursor:pointer; transition:.15s; }
+  .pay-option:hover{ border-color:var(--sky-3); }
+  .pay-option.selected{ border-color:var(--sky-4); background:var(--sky-1); }
+  .pay-option input{ margin-top:3px; width:16px; height:16px; accent-color:var(--sky-4); cursor:pointer; flex:none; }
+  .pay-option .pay-label{ font-weight:700; font-size:14px; color:var(--navy); }
+  .pay-option .pay-detail{ font-size:12.5px; color:var(--gray); margin-top:3px; line-height:1.5; }
+  .pay-type-select{ margin-top:8px; margin-left:26px; }
+  .pay-type-select select{ width:100%; padding:8px 10px; border:1.6px solid var(--sky-2); border-radius:8px; font-family:inherit; font-size:13.5px; }
   #sellImagePreviewWrap img{ width:110px; height:110px; object-fit:cover; border-radius:12px; border:2px solid var(--sky-2); }
   .modal-submit{
     width:100%; background:var(--coral); color:#fff; padding:12px; border-radius:10px; font-weight:700; font-size:15px;
@@ -288,6 +333,11 @@
     </div>
   </div>
 </header>
+
+<div class="banner-carousel" id="bannerCarousel" style="display:none;">
+  <div class="banner-track" id="bannerTrack"></div>
+  <div class="banner-dots" id="bannerDots"></div>
+</div>
 
 <section class="hero">
   <h1>My Product — আপনার বিশ্বস্ত অনলাইন শপ</h1>
@@ -369,6 +419,10 @@
   <div class="modal">
     <button class="close" onclick="closeOverlay('orderOverlay')">✕</button>
     <h3 id="orderTitle">অর্ডার করুন</h3>
+    <div id="orderDescBox" style="display:none; background:var(--sky-1); border:1.5px solid var(--sky-2); border-radius:12px; padding:12px 14px; margin-bottom:12px;">
+      <div style="font-weight:700; font-size:13px; color:var(--sky-5); margin-bottom:4px;">📋 পণ্যের বিবরণ / গ্যারান্টি-ওয়ারেন্টি</div>
+      <div id="orderDescText" style="font-size:13.5px; color:var(--navy); line-height:1.6;"></div>
+    </div>
     <p class="sub" id="orderSub"></p>
     <form id="orderForm" onsubmit="return submitOrder(event)">
       <div class="field"><label>নাম</label><input type="text" id="order_name" required></div>
@@ -381,6 +435,17 @@
           </select>
         </div>
         <div class="field" id="orderColourField"><label>কালার</label><select id="order_colour"></select></div>
+      </div>
+      <div class="field">
+        <label>পেমেন্ট পদ্ধতি</label>
+        <div id="orderPaymentOptions"></div>
+        <div class="pay-type-select" id="orderPayTypeWrap" style="display:none;">
+          <select id="order_pay_type"></select>
+        </div>
+      </div>
+      <div class="field" id="orderTxnField" style="display:none;">
+        <label>ট্রানজেকশন আইডি (অগ্রিম পেমেন্ট করে থাকলে)</label>
+        <input type="text" id="order_txn_id" placeholder="যেমনঃ 8N7A5X2K1">
       </div>
       <button class="modal-submit" type="submit">✅ WhatsApp-এ অর্ডার পাঠান</button>
       <p class="whatsapp-note">সাবমিট করলে সংশ্লিষ্ট বিক্রেতার WhatsApp খুলে যাবে অর্ডার বার্তাসহ।</p>
@@ -440,7 +505,60 @@
         <input type="file" id="sell_image_file" accept="image/jpeg,image/jpg,image/png" onchange="previewSellImage(event)">
         <div id="sellImagePreviewWrap" style="margin-top:8px;"></div>
       </div>
-      <div class="field"><label>পণ্যের বিবরণ</label><textarea id="sell_desc" rows="2" placeholder="অবস্থা, ব্যবহারের সময়কাল ইত্যাদি"></textarea></div>
+      <div class="field"><label>পণ্যের বিবরণ/গ্যারান্টি/ওয়ারেন্টি</label><textarea id="sell_desc" rows="2" placeholder="পণ্যের অবস্থা, গ্যারান্টি/ওয়ারেন্টি সময়কাল, ব্যবহারের বিবরণ ইত্যাদি লিখুন"></textarea></div>
+
+      <div class="field" style="border-top:2px dashed var(--sky-2); padding-top:16px; margin-top:6px;">
+        <label style="font-size:15px; color:var(--sky-5); margin-bottom:10px;">💳 পেমেন্ট মেথড (যেভাবে কাস্টমার টাকা পাঠাবে)</label>
+
+        <div class="pay-method-box">
+          <div class="pay-method-row">
+            <input type="text" id="pay_bkash_number" placeholder="bKash নম্বর (না দিলে খালি রাখো)">
+          </div>
+          <div class="pay-type-row" id="bkashTypeRow">
+            <label><input type="checkbox" name="bkash_type" value="send_money" checked> Send Money</label>
+            <label><input type="checkbox" name="bkash_type" value="cash_out"> Cash Out</label>
+            <label><input type="checkbox" name="bkash_type" value="payment"> Payment</label>
+          </div>
+        </div>
+
+        <div class="pay-method-box">
+          <div class="pay-method-row">
+            <input type="text" id="pay_nagad_number" placeholder="Nagad নম্বর (না দিলে খালি রাখো)">
+          </div>
+          <div class="pay-type-row" id="nagadTypeRow">
+            <label><input type="checkbox" name="nagad_type" value="send_money" checked> Send Money</label>
+            <label><input type="checkbox" name="nagad_type" value="cash_out"> Cash Out</label>
+            <label><input type="checkbox" name="nagad_type" value="payment"> Payment</label>
+          </div>
+        </div>
+
+        <div class="pay-method-box">
+          <div class="pay-method-row">
+            <input type="text" id="pay_rocket_number" placeholder="Rocket নম্বর (না দিলে খালি রাখো)">
+          </div>
+          <div class="pay-type-row" id="rocketTypeRow">
+            <label><input type="checkbox" name="rocket_type" value="send_money" checked> Send Money</label>
+            <label><input type="checkbox" name="rocket_type" value="cash_out"> Cash Out</label>
+            <label><input type="checkbox" name="rocket_type" value="payment"> Payment</label>
+          </div>
+        </div>
+
+        <div class="pay-method-box">
+          <label style="display:flex; align-items:center; gap:8px; font-weight:600; font-size:13.5px; cursor:pointer;">
+            <input type="checkbox" id="pay_bank_enable" onchange="document.getElementById('bankDetailsField').style.display=this.checked?'':'none'" style="width:17px;height:17px;"> ব্যাংক অ্যাকাউন্টে ট্রান্সফার সুবিধা আছে
+          </label>
+          <div id="bankDetailsField" style="display:none; margin-top:8px;">
+            <textarea id="pay_bank_details" rows="2" placeholder="ব্যাংকের নাম, অ্যাকাউন্ট নম্বর, অ্যাকাউন্ট হোল্ডারের নাম, শাখা"></textarea>
+          </div>
+        </div>
+
+        <div class="pay-method-box" style="background:#eefcf3;">
+          <label style="display:flex; align-items:center; gap:8px; font-weight:600; font-size:13.5px; cursor:pointer;">
+            <input type="checkbox" id="pay_cod_enable" checked style="width:17px;height:17px;"> ক্যাশ অন ডেলিভারি (Cash on Delivery) সুবিধা আছে
+          </label>
+        </div>
+      </div>
+
       <button class="modal-submit" type="submit">✅ WhatsApp-এ পাঠান</button>
       <p class="whatsapp-note">সাবমিট করলে WhatsApp (01851717924) খুলে যাবে পণ্যের তথ্যসহ।</p>
     </form>
@@ -799,6 +917,75 @@ categories.forEach(c=>{
 });
 
 /* ================= LIVE PRODUCTS FROM SUPABASE ================= */
+/* ================= BANNER CAROUSEL (এডমিন প্যানেল থেকে ⭐ ব্যানারে যোগ করা প্রোডাক্ট) ================= */
+let bannerIntervalId = null;
+const BANNER_GRADIENTS = [
+  'linear-gradient(120deg,#0b6fa3,#1e9bd7)',
+  'linear-gradient(120deg,#7c3aed,#a855f7)',
+  'linear-gradient(120deg,#e04e22,#ff6a3d)',
+  'linear-gradient(120deg,#0f766e,#14b8a6)',
+  'linear-gradient(120deg,#be123c,#fb7185)',
+];
+
+function renderBannerCarousel(featuredProducts){
+  const wrap = document.getElementById('bannerCarousel');
+  const track = document.getElementById('bannerTrack');
+  const dotsWrap = document.getElementById('bannerDots');
+  if(bannerIntervalId){ clearInterval(bannerIntervalId); bannerIntervalId = null; }
+
+  if(!featuredProducts || featuredProducts.length === 0){
+    wrap.style.display = 'none';
+    return;
+  }
+  wrap.style.display = 'block';
+  track.innerHTML = '';
+  dotsWrap.innerHTML = '';
+
+  featuredProducts.forEach((p, i)=>{
+    const percent = (p.old_price && p.old_price > p.price) ? Math.round((1 - p.price/p.old_price)*100) : null;
+    const media = p.image_url
+      ? `<img src="${p.image_url}" alt="${p.name}">`
+      : (ICONS[p.icon] || ICONS['toys']);
+    const slide = document.createElement('div');
+    slide.className = 'banner-slide' + (i===0 ? ' active' : '');
+    slide.style.background = BANNER_GRADIENTS[i % BANNER_GRADIENTS.length];
+    slide.innerHTML = `
+      <div class="b-text">
+        ${percent ? `<span class="b-discount">🔥 ${percent}% ছাড়</span>` : ''}
+        <div class="b-name">${p.name}</div>
+        <div class="b-price">${p.old_price ? `<span class="old">৳${Number(p.old_price).toLocaleString('en-IN')}</span>` : ''}৳${Number(p.price).toLocaleString('en-IN')}</div>
+      </div>
+      <div class="b-media">${media}</div>`;
+    slide.onclick = ()=>{
+      const sec = document.getElementById('sec-'+p.category);
+      if(sec) sec.scrollIntoView({behavior:'smooth', block:'start'});
+    };
+    track.appendChild(slide);
+
+    const dot = document.createElement('div');
+    dot.className = 'banner-dot' + (i===0 ? ' active' : '');
+    dot.onclick = (e)=>{ e.stopPropagation(); goToBannerSlide(i); };
+    dotsWrap.appendChild(dot);
+  });
+
+  let current = 0;
+  function goToBannerSlide(i){
+    const slides = track.querySelectorAll('.banner-slide');
+    const dots = dotsWrap.querySelectorAll('.banner-dot');
+    slides[current].classList.remove('active');
+    dots[current].classList.remove('active');
+    current = i;
+    slides[current].classList.add('active');
+    dots[current].classList.add('active');
+  }
+
+  if(featuredProducts.length > 1){
+    bannerIntervalId = setInterval(()=>{
+      goToBannerSlide((current + 1) % featuredProducts.length);
+    }, 3800);
+  }
+}
+
 let PRODUCTS_BY_CAT = {}; // key -> array of approved product rows (refreshed on load / after order)
 
 function renderCategoryGrid(key, filterField){
@@ -843,6 +1030,8 @@ async function loadAndRenderAll(){
     const filterField = c.key==='tshirt' ? 'gender' : (c.brands ? 'brand' : null);
     renderCategoryGrid(c.key, filterField);
   });
+
+  renderBannerCarousel((data||[]).filter(p=>p.featured));
 
   const total = (data||[]).length;
   const totalEl = document.getElementById('totalProductCount');
@@ -905,6 +1094,16 @@ function startOrder(product, categoryKey){
   ensureUserInfo(()=>{
     document.getElementById('orderTitle').textContent = 'অর্ডার করুন';
     document.getElementById('orderSub').textContent = product.name + ' — ৳' + product.price.toLocaleString('en-IN');
+
+    const descBox = document.getElementById('orderDescBox');
+    const descText = document.getElementById('orderDescText');
+    if(product.descr && product.descr.trim()){
+      descText.textContent = product.descr;
+      descBox.style.display = '';
+    } else {
+      descBox.style.display = 'none';
+    }
+
     document.getElementById('order_name').value = userInfo.name;
     document.getElementById('order_number').value = userInfo.phone;
     document.getElementById('order_address').value = userInfo.address;
@@ -923,8 +1122,68 @@ function startOrder(product, categoryKey){
       colourSelect.innerHTML = '';
     }
 
+    renderPaymentOptions(product.payment_methods);
+
     openOverlay('orderOverlay');
   });
+}
+
+/* ================= PAYMENT METHOD OPTIONS (order form) ================= */
+const PAY_TYPE_LABELS = {send_money:'Send Money', cash_out:'Cash Out', payment:'Payment'};
+
+function renderPaymentOptions(paymentMethods){
+  const wrap = document.getElementById('orderPaymentOptions');
+  const typeWrap = document.getElementById('orderPayTypeWrap');
+  const typeSelect = document.getElementById('order_pay_type');
+  const txnField = document.getElementById('orderTxnField');
+  wrap.innerHTML = '';
+  typeWrap.style.display = 'none';
+  txnField.style.display = 'none';
+
+  const pm = paymentMethods || {};
+  const options = [];
+  options.push({ key:'cod', label:'💵 Cash on Delivery (হাতে পেয়ে টাকা)', detail:'পণ্য হাতে পাওয়ার পর টাকা পরিশোধ করবেন' });
+  if(pm.bkash) options.push({ key:'bkash', label:'📱 bKash', detail:`নম্বর: ${pm.bkash.number}`, types:pm.bkash.types });
+  if(pm.nagad) options.push({ key:'nagad', label:'📱 Nagad', detail:`নম্বর: ${pm.nagad.number}`, types:pm.nagad.types });
+  if(pm.rocket) options.push({ key:'rocket', label:'📱 Rocket', detail:`নম্বর: ${pm.rocket.number}`, types:pm.rocket.types });
+  if(pm.bank) options.push({ key:'bank', label:'🏦 ব্যাংক ট্রান্সফার', detail:pm.bank.details });
+
+  options.forEach((opt, i)=>{
+    const row = document.createElement('label');
+    row.className = 'pay-option' + (i===0 ? ' selected' : '');
+    row.innerHTML = `
+      <input type="radio" name="order_pay_method" value="${opt.key}" ${i===0 ? 'checked' : ''}>
+      <div>
+        <div class="pay-label">${opt.label}</div>
+        <div class="pay-detail">${opt.detail}</div>
+      </div>`;
+    row.querySelector('input').onchange = ()=>{
+      wrap.querySelectorAll('.pay-option').forEach(el=>el.classList.remove('selected'));
+      row.classList.add('selected');
+      updatePaymentTypeAndTxnVisibility(opt);
+    };
+    wrap.appendChild(row);
+  });
+
+  updatePaymentTypeAndTxnVisibility(options[0]);
+}
+
+function updatePaymentTypeAndTxnVisibility(opt){
+  const typeWrap = document.getElementById('orderPayTypeWrap');
+  const typeSelect = document.getElementById('order_pay_type');
+  const txnField = document.getElementById('orderTxnField');
+
+  if(opt.types && opt.types.length > 1){
+    typeWrap.style.display = '';
+    typeSelect.innerHTML = opt.types.map(t=>`<option value="${t}">${PAY_TYPE_LABELS[t]}</option>`).join('');
+  } else if(opt.types && opt.types.length === 1){
+    typeWrap.style.display = 'none';
+    typeSelect.innerHTML = `<option value="${opt.types[0]}">${PAY_TYPE_LABELS[opt.types[0]]}</option>`;
+  } else {
+    typeWrap.style.display = 'none';
+    typeSelect.innerHTML = '';
+  }
+  txnField.style.display = (opt.key === 'cod') ? 'none' : '';
 }
 
 /* সব প্রোডাক্টে seller_phone না থাকলে (যেমন এডমিনের নিজের বসানো ডেমো প্রোডাক্ট)
@@ -951,8 +1210,18 @@ async function submitOrder(e){
   const size = sizeVisible ? document.getElementById('order_size').value : '';
   const colour = document.getElementById('order_colour').value.trim();
   const p = currentOrderProduct;
+
+  const payMethodKey = document.querySelector('input[name="order_pay_method"]:checked')?.value || 'cod';
+  const payMethodLabels = {cod:'Cash on Delivery', bkash:'bKash', nagad:'Nagad', rocket:'Rocket', bank:'ব্যাংক ট্রান্সফার'};
+  const payType = document.getElementById('order_pay_type').value;
+  const txnId = document.getElementById('order_txn_id').value.trim();
+  let paymentLine = `পেমেন্ট পদ্ধতি: ${payMethodLabels[payMethodKey]}`;
+  if(payType) paymentLine += ` (${PAY_TYPE_LABELS[payType] || payType})`;
+  if(txnId) paymentLine += `\nট্রানজেকশন আইডি: ${txnId}`;
+
   const msg = `আসসালামু আলাইকুম, আমি নিচের পণ্যটি অর্ডার করতে চাই:\n\n`+
     `পণ্য: ${p.name}\nদাম: ৳${p.price.toLocaleString('en-IN')}\n${size ? `সাইজ: ${size}\n` : ''}${colour ? `কালার: ${colour}\n` : ''}\n`+
+    `${paymentLine}\n\n`+
     `নাম: ${name}\nফোন: ${number}\nঠিকানা: ${address}`;
   const targetPhone = formatPhoneForWhatsApp(p.seller_phone);
   window.open('https://wa.me/' + targetPhone + '?text=' + encodeURIComponent(msg), '_blank');
@@ -1047,6 +1316,26 @@ async function submitSell(e){
   const genderIconMap = {boy:'tshirt_boy', girl:'tshirt_girl', kids:'tshirt_kids'};
   const icon = (category === 'tshirt') ? (genderIconMap[gender] || 'tshirt_boy') : category;
 
+  /* ================ পেমেন্ট মেথড গোছানো ================ */
+  function getCheckedTypes(name){
+    return Array.from(document.querySelectorAll(`input[name="${name}"]:checked`)).map(el=>el.value);
+  }
+  const paymentMethods = { cod: document.getElementById('pay_cod_enable').checked };
+
+  const bkashNumber = document.getElementById('pay_bkash_number').value.trim();
+  if(bkashNumber){ paymentMethods.bkash = { number: bkashNumber, types: getCheckedTypes('bkash_type') }; }
+
+  const nagadNumber = document.getElementById('pay_nagad_number').value.trim();
+  if(nagadNumber){ paymentMethods.nagad = { number: nagadNumber, types: getCheckedTypes('nagad_type') }; }
+
+  const rocketNumber = document.getElementById('pay_rocket_number').value.trim();
+  if(rocketNumber){ paymentMethods.rocket = { number: rocketNumber, types: getCheckedTypes('rocket_type') }; }
+
+  if(document.getElementById('pay_bank_enable').checked){
+    const bankDetails = document.getElementById('pay_bank_details').value.trim();
+    if(bankDetails){ paymentMethods.bank = { details: bankDetails }; }
+  }
+
   let imageUrl = null;
   try{
     if(file){
@@ -1068,6 +1357,7 @@ async function submitSell(e){
       colors: selectedColors.length ? selectedColors : null,
       stock: 0,
       requested_stock: quantity ? Number(quantity) : null,
+      payment_methods: paymentMethods,
       status: 'pending',
       image_url: imageUrl,
       descr: desc,
@@ -1081,17 +1371,26 @@ async function submitSell(e){
     alert('দুঃখিত, পণ্যটি জমা দিতে সমস্যা হয়েছে: ' + err.message + '\n\nতবু WhatsApp এ মেসেজ পাঠানো হচ্ছে, admin কে সরাসরি জানাতে।');
   }
 
+  const typeLabels = {send_money:'Send Money', cash_out:'Cash Out', payment:'Payment'};
+  let paymentText = 'ক্যাশ অন ডেলিভারি' + (paymentMethods.cod ? ' (আছে)' : ' (নেই)');
+  if(paymentMethods.bkash) paymentText += `\nbKash: ${paymentMethods.bkash.number} (${paymentMethods.bkash.types.map(t=>typeLabels[t]).join(', ')})`;
+  if(paymentMethods.nagad) paymentText += `\nNagad: ${paymentMethods.nagad.number} (${paymentMethods.nagad.types.map(t=>typeLabels[t]).join(', ')})`;
+  if(paymentMethods.rocket) paymentText += `\nRocket: ${paymentMethods.rocket.number} (${paymentMethods.rocket.types.map(t=>typeLabels[t]).join(', ')})`;
+  if(paymentMethods.bank) paymentText += `\nব্যাংক: ${paymentMethods.bank.details}`;
+
   const msg = `আসসালামু আলাইকুম, আমি একটি পণ্য বিক্রি করতে চাই (Admin panel এ Pending হিসেবে জমা হয়েছে):\n\n`+
     `পণ্যের নাম: ${pname}\nবিভাগ: ${categoryLabel}\n`+
     `${brand ? `ব্র্যান্ড: ${brand}\n` : ''}${genderLabelText ? `কাদের জন্য: ${genderLabelText}\n` : ''}`+
     `${oldPrice ? `আসল দাম: ৳${oldPrice}\n` : ''}বিক্রয় মূল্য: ৳${price}\nQuantity: ${quantity}\n`+
     `কালার অপশন: ${coloursText}\n`+
     `বিবরণ: ${desc}\n\n`+
+    `পেমেন্ট পদ্ধতি —\n${paymentText}\n\n`+
     `বিক্রেতার তথ্য —\nনাম: ${userInfo.name}\nফোন: ${userInfo.phone}\nএনআইডি: ${userInfo.nid}\nঠিকানা: ${userInfo.address}`;
 
   window.open('https://wa.me/8801851717924?text=' + encodeURIComponent(msg), '_blank');
   closeOverlay('sellOverlay');
   document.getElementById('sellForm').reset();
+  document.getElementById('bankDetailsField').style.display = 'none';
   document.getElementById('sellImagePreviewWrap').innerHTML = '';
   sellImageChosen = false;
   submitBtn.disabled = false;
