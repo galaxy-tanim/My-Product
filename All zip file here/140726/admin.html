@@ -44,8 +44,8 @@
   .err{ color:var(--red); font-size:13px; margin-top:10px; }
 
   .tabs{ display:flex; gap:8px; margin:20px 0 16px; flex-wrap:wrap; }
-  .tab-btn, .subtab-btn{ padding:9px 18px; border-radius:30px; border:2px solid var(--sky-3); background:#fff; color:var(--sky-5); font-weight:700; font-size:13.5px; cursor:pointer; font-family:inherit; }
-  .tab-btn.active, .subtab-btn.active{ background:var(--sky-4); color:#fff; border-color:var(--sky-4); }
+  .tab-btn{ padding:9px 18px; border-radius:30px; border:2px solid var(--sky-3); background:#fff; color:var(--sky-5); font-weight:700; font-size:13.5px; cursor:pointer; font-family:inherit; }
+  .tab-btn.active{ background:var(--sky-4); color:#fff; border-color:var(--sky-4); }
 
   .stat-row{ display:flex; gap:14px; margin-bottom:20px; flex-wrap:wrap; }
   .stat{ background:#fff; border-radius:14px; padding:16px 22px; flex:1; min-width:140px; box-shadow:0 4px 10px rgba(11,58,82,0.08); }
@@ -96,7 +96,6 @@
       <div class="stat"><b id="pendingCount">0</b><span>অপেক্ষারত পণ্য (Pending)</span></div>
       <div class="stat"><b id="approvedCount">0</b><span>মোট লাইভ পণ্য</span></div>
       <div class="stat"><b id="stockZeroCount">0</b><span>স্টক শেষ হওয়া পণ্য</span></div>
-      <div class="stat" style="border-left:4px solid #f5a300;"><b id="lowStockCount" style="color:#f5a300;">0</b><span>⚠️ কম স্টক (১-৩)</span></div>
     </div>
 
     <div class="seed-box" id="seedBox">
@@ -109,8 +108,6 @@
     <div class="tabs">
       <button class="tab-btn active" data-tab="pending" onclick="switchTab('pending')">📥 Pending Requests</button>
       <button class="tab-btn" data-tab="manage" onclick="switchTab('manage')">📦 সব পণ্য ও স্টক</button>
-      <button class="tab-btn" data-tab="reviews" onclick="switchTab('reviews')">⭐ রিভিউ</button>
-      <button class="tab-btn" data-tab="banners" onclick="switchTab('banners')">🖼️ ব্যানার</button>
     </div>
 
     <div id="pendingTab"><div id="pendingList"></div></div>
@@ -124,33 +121,6 @@
         <button class="btn" style="background:var(--red);" onclick="clearAllProducts()">🗑️ সব পণ্য মুছে ফেলো (সম্পূর্ণ সাইট)</button>
       </div>
       <div id="manageList"></div>
-    </div>
-    <div id="reviewsTab" style="display:none;">
-      <div class="tabs">
-        <button class="subtab-btn active" data-review-tab="pending" onclick="switchReviewTab('pending')">⏳ অপেক্ষারত রিভিউ</button>
-        <button class="subtab-btn" data-review-tab="approved" onclick="switchReviewTab('approved')">✅ প্রকাশিত রিভিউ</button>
-      </div>
-      <div id="reviewsPendingList"></div>
-      <div id="reviewsApprovedList" style="display:none;"></div>
-    </div>
-    <div id="bannersTab" style="display:none;">
-      <div class="seed-box">
-        <h3>🖼️ নতুন ব্যানার আপলোড করো</h3>
-        <p>প্রস্তাবিত সাইজ: প্রায় ১২০০x৪০০ পিক্সেল (চওড়া ব্যানার আকৃতি) — এতে ছবি সবচেয়ে ভালো দেখাবে, ভিন্ন অনুপাতের ছবি সামান্য crop হতে পারে।</p>
-        <div class="field" style="max-width:420px;">
-          <label>ব্যানার ছবি (jpg/png)</label>
-          <input type="file" id="banner_image_file" accept="image/jpeg,image/jpg,image/png">
-        </div>
-        <div class="field" style="max-width:420px;">
-          <label>ক্লিক করলে কোন বিভাগে যাবে? (ঐচ্ছিক)</label>
-          <select id="banner_link_category">
-            <option value="">কোথাও যাবে না (শুধু দেখানোর জন্য)</option>
-          </select>
-        </div>
-        <button class="btn" onclick="uploadBanner()">⬆️ আপলোড করো</button>
-        <span id="bannerUploadStatus" style="margin-left:10px;font-size:13px;color:var(--gray);"></span>
-      </div>
-      <div id="bannersList"></div>
     </div>
   </div>
 </div>
@@ -307,7 +277,6 @@ function onLoggedIn(){
   refreshStats();
   loadPending();
   populateManageCategoryFilter();
-  populateBannerCategoryDropdown();
 }
 checkSession();
 
@@ -316,79 +285,7 @@ function switchTab(tab){
   document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active', b.dataset.tab===tab));
   document.getElementById('pendingTab').style.display = tab==='pending' ? '' : 'none';
   document.getElementById('manageTab').style.display = tab==='manage' ? '' : 'none';
-  document.getElementById('reviewsTab').style.display = tab==='reviews' ? '' : 'none';
-  document.getElementById('bannersTab').style.display = tab==='banners' ? '' : 'none';
   if(tab==='manage') loadManageList();
-  if(tab==='reviews') loadReviewsPending();
-  if(tab==='banners') loadBannersList();
-}
-
-function switchReviewTab(tab){
-  document.querySelectorAll('.subtab-btn').forEach(b=>b.classList.toggle('active', b.dataset.reviewTab===tab));
-  document.getElementById('reviewsPendingList').style.display = tab==='pending' ? '' : 'none';
-  document.getElementById('reviewsApprovedList').style.display = tab==='approved' ? '' : 'none';
-  if(tab==='pending') loadReviewsPending();
-  else loadReviewsApproved();
-}
-
-async function loadReviewsPending(){
-  const list = document.getElementById('reviewsPendingList');
-  const { data, error } = await sb.from('reviews').select('*').eq('status','pending').order('created_at',{ascending:false});
-  if(error){ list.innerHTML = '<div class="empty">ত্রুটি: '+error.message+'</div>'; return; }
-  if(!data || data.length===0){ list.innerHTML = '<div class="empty">🎉 এখন কোনো রিভিউ অপেক্ষারত নেই।</div>'; return; }
-  list.innerHTML = '';
-  data.forEach(r=>{
-    const stars = '★'.repeat(r.rating) + '☆'.repeat(5-r.rating);
-    const el = document.createElement('div');
-    el.className = 'pcard';
-    el.innerHTML = `
-      <div class="info">
-        <span class="badge">${r.product_name || ('Product #'+r.product_id)}</span>
-        <h3>${r.customer_name} <span style="color:#f5a300;font-size:15px;">${stars}</span></h3>
-        <div class="meta"><div>${r.comment || '(কোনো মন্তব্য দেয়নি)'}</div></div>
-      </div>
-      <div class="actions">
-        <button class="acc-btn">✅ Accept</button>
-        <button class="rej-btn">❌ Reject</button>
-      </div>`;
-    el.querySelector('.acc-btn').onclick = async ()=>{
-      const { error } = await sb.from('reviews').update({status:'approved'}).eq('id', r.id);
-      if(error) alert('ব্যর্থ: '+error.message); else loadReviewsPending();
-    };
-    el.querySelector('.rej-btn').onclick = async ()=>{
-      const { error } = await sb.from('reviews').delete().eq('id', r.id);
-      if(error) alert('ব্যর্থ: '+error.message); else loadReviewsPending();
-    };
-    list.appendChild(el);
-  });
-}
-
-async function loadReviewsApproved(){
-  const list = document.getElementById('reviewsApprovedList');
-  const { data, error } = await sb.from('reviews').select('*').eq('status','approved').order('created_at',{ascending:false});
-  if(error){ list.innerHTML = '<div class="empty">ত্রুটি: '+error.message+'</div>'; return; }
-  if(!data || data.length===0){ list.innerHTML = '<div class="empty">এখনো কোনো প্রকাশিত রিভিউ নেই।</div>'; return; }
-  list.innerHTML = '';
-  data.forEach(r=>{
-    const stars = '★'.repeat(r.rating) + '☆'.repeat(5-r.rating);
-    const el = document.createElement('div');
-    el.className = 'pcard';
-    el.innerHTML = `
-      <div class="info">
-        <span class="badge">${r.product_name || ('Product #'+r.product_id)}</span>
-        <h3>${r.customer_name} <span style="color:#f5a300;font-size:15px;">${stars}</span></h3>
-        <div class="meta"><div>${r.comment || '(কোনো মন্তব্য দেয়নি)'}</div></div>
-      </div>
-      <div class="actions">
-        <button class="del-btn">🗑️ মুছে ফেলো</button>
-      </div>`;
-    el.querySelector('.del-btn').onclick = async ()=>{
-      if(!confirm('এই রিভিউটা মুছে ফেলতে চাও?')) return;
-      const { error } = await sb.from('reviews').delete().eq('id', r.id);
-      if(error) alert('ব্যর্থ: '+error.message); else loadReviewsApproved();
-    };
-    list.appendChild(el);
-  });
 }
 
 /* ================= STATS ================= */
@@ -396,11 +293,9 @@ async function refreshStats(){
   const { count: pendingN } = await sb.from('products').select('*', { count:'exact', head:true }).eq('status','pending');
   const { count: approvedN } = await sb.from('products').select('*', { count:'exact', head:true }).eq('status','approved');
   const { count: zeroN } = await sb.from('products').select('*', { count:'exact', head:true }).eq('status','approved').eq('stock',0);
-  const { count: lowN } = await sb.from('products').select('*', { count:'exact', head:true }).eq('status','approved').gt('stock',0).lte('stock',3);
   document.getElementById('pendingCount').textContent = pendingN ?? 0;
   document.getElementById('approvedCount').textContent = approvedN ?? 0;
   document.getElementById('stockZeroCount').textContent = zeroN ?? 0;
-  document.getElementById('lowStockCount').textContent = lowN ?? 0;
 }
 
 /* ================= PENDING LIST ================= */
@@ -472,14 +367,11 @@ async function loadManageList(){
     const el = document.createElement('div');
     el.className='pcard';
     const isFeatured = !!p.featured;
-    const isLowStock = p.stock > 0 && p.stock <= 3;
-    if(isLowStock) el.style.borderLeft = '4px solid #f5a300';
     el.innerHTML = `
       ${p.image_url ? `<img class="thumb" src="${p.image_url}" alt="${p.name}">` : `<div class="thumb-fallback">📦</div>`}
       <div class="info">
         <span class="badge">${categoryNames[p.category] || p.category}</span>
         ${isFeatured ? `<span class="badge" style="background:#fff3cd;color:#a15c00;margin-left:6px;">⭐ ব্যানারে আছে</span>` : ''}
-        ${isLowStock ? `<span class="badge" style="background:#fff0d6;color:#a15c00;margin-left:6px;">⚠️ কম স্টক</span>` : ''}
         <h3>${p.name}</h3>
         <div class="meta"><div><b>দাম:</b> ৳${p.price}${p.old_price ? ` (আগে ৳${p.old_price})` : ''}</div></div>
       </div>
@@ -557,78 +449,6 @@ async function loadDemoData(){
     refreshStats();
     loadManageList();
   }
-}
-
-/* ================= BANNER MANAGEMENT ================= */
-function populateBannerCategoryDropdown(){
-  const sel = document.getElementById('banner_link_category');
-  Object.keys(categoryNames).forEach(k=>{
-    const opt = document.createElement('option');
-    opt.value = k;
-    opt.textContent = categoryNames[k];
-    sel.appendChild(opt);
-  });
-}
-
-async function uploadBanner(){
-  const fileInput = document.getElementById('banner_image_file');
-  const file = fileInput.files[0];
-  const status = document.getElementById('bannerUploadStatus');
-  if(!file){ alert('একটা ছবি সিলেক্ট করো।'); return; }
-
-  status.textContent = 'আপলোড হচ্ছে...';
-  try{
-    const path = `banners/${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.]/g,'_')}`;
-    const { error: upErr } = await sb.storage.from('product-images').upload(path, file);
-    if(upErr) throw upErr;
-    const { data: pub } = sb.storage.from('product-images').getPublicUrl(path);
-
-    const linkCategory = document.getElementById('banner_link_category').value || null;
-    const { error: insErr } = await sb.from('banners').insert({
-      image_url: pub.publicUrl,
-      link_category: linkCategory,
-      active: true
-    });
-    if(insErr) throw insErr;
-
-    status.textContent = '✅ ব্যানার সফলভাবে যোগ হয়েছে!';
-    fileInput.value = '';
-    loadBannersList();
-  } catch(err){
-    status.textContent = 'ব্যর্থ: ' + err.message;
-  }
-}
-
-async function loadBannersList(){
-  const list = document.getElementById('bannersList');
-  const { data, error } = await sb.from('banners').select('*').order('created_at', {ascending:false});
-  if(error){ list.innerHTML = '<div class="empty">ত্রুটি: '+error.message+'</div>'; return; }
-  if(!data || data.length===0){ list.innerHTML = '<div class="empty">এখনো কোনো ব্যানার যোগ করা হয়নি।</div>'; return; }
-  list.innerHTML = '';
-  data.forEach(b=>{
-    const el = document.createElement('div');
-    el.className = 'pcard';
-    el.innerHTML = `
-      <img class="thumb" src="${b.image_url}" alt="banner" style="object-fit:cover;">
-      <div class="info">
-        <span class="badge" style="background:${b.active ? '#e3f7ec' : '#fde3e6'};color:${b.active ? 'var(--green)' : 'var(--red)'};">${b.active ? 'সক্রিয় (দেখা যাচ্ছে)' : 'নিষ্ক্রিয় (লুকানো)'}</span>
-        <div class="meta" style="margin-top:8px;"><div><b>লিংক:</b> ${b.link_category ? (categoryNames[b.link_category] || b.link_category) : 'কোথাও না'}</div></div>
-      </div>
-      <div class="actions">
-        <button class="save-btn toggle-active-btn">${b.active ? '👁️ লুকিয়ে দাও' : '👁️ দেখাও'}</button>
-        <button class="del-btn">🗑️ ডিলিট</button>
-      </div>`;
-    el.querySelector('.toggle-active-btn').onclick = async ()=>{
-      const { error } = await sb.from('banners').update({ active: !b.active }).eq('id', b.id);
-      if(error) alert('ব্যর্থ: '+error.message); else loadBannersList();
-    };
-    el.querySelector('.del-btn').onclick = async ()=>{
-      if(!confirm('এই ব্যানারটা মুছে ফেলতে চাও?')) return;
-      const { error } = await sb.from('banners').delete().eq('id', b.id);
-      if(error) alert('ব্যর্থ: '+error.message); else loadBannersList();
-    };
-    list.appendChild(el);
-  });
 }
 </script>
 </body>

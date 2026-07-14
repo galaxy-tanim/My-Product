@@ -114,8 +114,6 @@
   .banner-slide .b-media{ position:relative; z-index:2; width:clamp(90px,22vw,190px); height:clamp(90px,22vw,190px); flex:none; display:flex; align-items:center; justify-content:center; }
   .banner-slide .b-media img{ width:100%; height:100%; object-fit:contain; filter:drop-shadow(0 10px 18px rgba(0,0,0,0.3)); }
   .banner-slide .b-media svg{ width:80%; height:80%; }
-  .banner-slide.image-slide{ padding:0; cursor:pointer; }
-  .banner-slide.image-slide img{ width:100%; height:100%; object-fit:cover; display:block; }
   .banner-dots{ display:flex; justify-content:center; gap:6px; padding:10px 0; background:var(--sky-1); }
   .banner-dot{ width:8px; height:8px; border-radius:50%; background:var(--sky-2); cursor:pointer; transition:.2s; }
   .banner-dot.active{ background:var(--sky-4); width:22px; border-radius:5px; }
@@ -214,22 +212,6 @@
   }
   .stock-badge{ position:absolute; bottom:10px; left:10px; background:rgba(11,58,82,0.85); color:#fff; font-size:11px; font-weight:700; padding:3px 9px; border-radius:8px; }
   .stock-badge.out{ background:var(--red); }
-  .wish-heart{
-    position:absolute; top:10px; left:10px; background:rgba(255,255,255,0.9); border:none; border-radius:50%;
-    width:32px; height:32px; font-size:16px; cursor:pointer; display:flex; align-items:center; justify-content:center;
-    box-shadow:0 2px 8px rgba(0,0,0,0.15); transition:.2s;
-  }
-  .wish-heart:hover{ transform:scale(1.12); }
-  .wish-heart.active{ background:#ffe3ea; }
-
-  .rating-line{ font-size:12.5px; color:var(--gray); cursor:pointer; margin:2px 0 4px; }
-  .rating-line:hover{ color:var(--sky-5); }
-  .review-item{ border-bottom:1px solid var(--sky-2); padding:10px 2px; }
-  .review-item:last-child{ border-bottom:none; }
-  .review-top{ display:flex; align-items:center; gap:8px; font-size:14px; }
-  .review-comment{ font-size:13.5px; color:var(--navy); margin-top:4px; line-height:1.6; }
-  .review-date{ font-size:11.5px; color:var(--gray); margin-top:4px; }
-  .star-picker span:hover{ transform:scale(1.1); }
   .order-btn:disabled{ background:#b7c4cc; cursor:not-allowed; }
   .order-btn:disabled:hover{ background:#b7c4cc; transform:none; box-shadow:none; }
   .card-body{ padding:12px 14px 14px; display:flex; flex-direction:column; gap:6px; flex:1; }
@@ -346,12 +328,16 @@
     </div>
     <button id="clearSearchBtn" class="pill-btn" style="display:none;" onclick="resetSearch()">✕ সার্চ মুছুন</button>
     <div class="top-actions">
-      <button class="pill-btn" onclick="openWishlist()">❤️ পছন্দের তালিকা <span id="wishlistCount" style="background:var(--coral);color:#fff;border-radius:10px;padding:1px 7px;font-size:11px;margin-left:2px;">0</span></button>
       <button class="pill-btn solid sell-btn-header" onclick="openSellFlow()">📦 পণ্য বিক্রি করুন</button>
       <a class="pill-btn" href="#categories">🗂️ বিভাগসমূহ</a>
     </div>
   </div>
 </header>
+
+<div class="banner-carousel" id="bannerCarousel" style="display:none;">
+  <div class="banner-track" id="bannerTrack"></div>
+  <div class="banner-dots" id="bannerDots"></div>
+</div>
 
 <section class="hero">
   <h1>My Product — আপনার বিশ্বস্ত অনলাইন শপ</h1>
@@ -362,11 +348,6 @@
   </div>
 </section>
 
-<div class="banner-carousel" id="bannerCarousel" style="display:none;">
-  <div class="banner-track" id="bannerTrack"></div>
-  <div class="banner-dots" id="bannerDots"></div>
-</div>
-
 <main class="container">
 
   <section class="section" id="categories">
@@ -375,7 +356,6 @@
   </section>
 
   <div id="allSections"></div>
-
 
   <section class="section">
     <div class="sell-banner">
@@ -582,41 +562,6 @@
       <button class="modal-submit" type="submit">✅ WhatsApp-এ পাঠান</button>
       <p class="whatsapp-note">সাবমিট করলে WhatsApp (01851717924) খুলে যাবে পণ্যের তথ্যসহ।</p>
     </form>
-  </div>
-</div>
-
-<!-- ===== MODAL: Product Reviews ===== -->
-<div class="overlay" id="reviewOverlay">
-  <div class="modal">
-    <button class="close" onclick="closeOverlay('reviewOverlay')">✕</button>
-    <h3>⭐ রিভিউ — <span id="reviewProductName"></span></h3>
-    <div id="reviewListWrap" style="margin:14px 0 20px; max-height:220px; overflow-y:auto;"></div>
-
-    <div style="border-top:2px dashed var(--sky-2); padding-top:16px;">
-      <p class="sub" style="margin-bottom:12px;">নিজের অভিজ্ঞতা শেয়ার করো</p>
-      <form id="reviewForm" onsubmit="return submitReview(event)">
-        <div class="field"><label>তোমার নাম</label><input type="text" id="review_name" required placeholder="যেমনঃ তানিম"></div>
-        <div class="field">
-          <label>রেটিং</label>
-          <div class="star-picker" style="font-size:28px; color:#f5a300; cursor:pointer;">
-            <span onclick="setReviewStars(1)">★</span><span onclick="setReviewStars(2)">★</span><span onclick="setReviewStars(3)">★</span><span onclick="setReviewStars(4)">★</span><span onclick="setReviewStars(5)">★</span>
-          </div>
-        </div>
-        <div class="field"><label>মন্তব্য (ঐচ্ছিক)</label><textarea id="review_comment" rows="2" placeholder="পণ্যটি কেমন লাগলো?"></textarea></div>
-        <button class="modal-submit" type="submit">✅ রিভিউ জমা দিন</button>
-        <p class="whatsapp-note">তোমার রিভিউ এডমিন যাচাই করার পর প্রকাশিত হবে।</p>
-      </form>
-    </div>
-  </div>
-</div>
-
-<!-- ===== MODAL: Wishlist (পছন্দের তালিকা) ===== -->
-<div class="overlay" id="wishlistOverlay">
-  <div class="modal" style="max-width:900px;">
-    <button class="close" onclick="closeOverlay('wishlistOverlay')">✕</button>
-    <h3>❤️ পছন্দের তালিকা</h3>
-    <p class="sub">এই তালিকা শুধু তোমার এই ব্রাউজারেই সংরক্ষিত থাকে (localStorage), অন্য ডিভাইসে দেখাবে না।</p>
-    <div class="prod-grid" id="wishlistGrid"></div>
   </div>
 </div>
 
@@ -873,13 +818,11 @@ function productCard(p, catBg, categoryKey){
   const card = document.createElement('div');
   card.className='card';
   card.dataset.search = searchStr;
-  const isWished = isInWishlist(p.id);
   card.innerHTML = `
     <div class="img-wrap" style="background:${catBg}">
       ${media}
       ${percent ? `<span class="discount-tag">-${percent}%</span>` : ''}
       <span class="stock-badge ${outOfStock ? 'out' : ''}">${outOfStock ? 'স্টক শেষ' : 'স্টক: '+p.stock}</span>
-      ${p.id ? `<button class="wish-heart ${isWished ? 'active' : ''}" title="পছন্দের তালিকায় যোগ করুন">${isWished ? '❤️' : '🤍'}</button>` : ''}
     </div>
     <div class="card-body">
       <h3>${p.brand ? `[${p.brand}] ` : ''}${p.name}</h3>
@@ -887,24 +830,10 @@ function productCard(p, catBg, categoryKey){
         ${oldPrice ? `<span class="old-price">৳${Number(oldPrice).toLocaleString('en-IN')}</span>` : ''}
         <span class="new-price">৳${Number(p.price).toLocaleString('en-IN')}</span>
       </div>
-      ${p.id ? `<div class="rating-line" data-pid="${p.id}">${renderRatingSummary(p.id)}</div>` : ''}
       <button class="order-btn" ${outOfStock ? 'disabled' : ''}>${outOfStock ? '❌ স্টক নেই' : '🛒 অর্ডার করুন'}</button>
     </div>`;
   if(!outOfStock){
     card.querySelector('.order-btn').onclick = ()=>startOrder(p, categoryKey);
-  }
-  const ratingLine = card.querySelector('.rating-line');
-  if(ratingLine){ ratingLine.onclick = ()=>openReviews(p); }
-  const heartBtn = card.querySelector('.wish-heart');
-  if(heartBtn){
-    heartBtn.onclick = (e)=>{
-      e.stopPropagation();
-      toggleWishlist(p.id);
-      const nowWished = isInWishlist(p.id);
-      heartBtn.textContent = nowWished ? '❤️' : '🤍';
-      heartBtn.classList.toggle('active', nowWished);
-      updateWishlistCount();
-    };
   }
   const photoEl = card.querySelector('.real-photo');
   if(photoEl){ photoEl.onclick = ()=>openImageZoom(p.image_url, p.name); }
@@ -988,9 +917,7 @@ categories.forEach(c=>{
 });
 
 /* ================= LIVE PRODUCTS FROM SUPABASE ================= */
-/* ================= BANNER CAROUSEL =================
-   অগ্রাধিকার: ১) এডমিনের আপলোড করা কাস্টম ব্যানার ছবি (থাকলে)
-              ২) না থাকলে ⭐ ব্যানারে যোগ করা প্রোডাক্ট থেকে অটো-তৈরি ব্যানার */
+/* ================= BANNER CAROUSEL (এডমিন প্যানেল থেকে ⭐ ব্যানারে যোগ করা প্রোডাক্ট) ================= */
 let bannerIntervalId = null;
 const BANNER_GRADIENTS = [
   'linear-gradient(120deg,#0b6fa3,#1e9bd7)',
@@ -1000,73 +927,16 @@ const BANNER_GRADIENTS = [
   'linear-gradient(120deg,#be123c,#fb7185)',
 ];
 
-function startBannerRotation(slideCount){
-  if(bannerIntervalId){ clearInterval(bannerIntervalId); bannerIntervalId = null; }
-  const track = document.getElementById('bannerTrack');
-  const dotsWrap = document.getElementById('bannerDots');
-  let current = 0;
-  function goToBannerSlide(i){
-    const slides = track.querySelectorAll('.banner-slide');
-    const dots = dotsWrap.querySelectorAll('.banner-dot');
-    slides[current].classList.remove('active');
-    dots[current].classList.remove('active');
-    current = i;
-    slides[current].classList.add('active');
-    dots[current].classList.add('active');
-  }
-  if(slideCount > 1){
-    bannerIntervalId = setInterval(()=>{ goToBannerSlide((current + 1) % slideCount); }, 4000);
-  }
-  return goToBannerSlide;
-}
-
-async function loadAndRenderBanners(featuredProducts){
-  const wrap = document.getElementById('bannerCarousel');
-  const { data: customBanners } = await sb.from('banners').select('*').eq('active', true).order('created_at', {ascending:true});
-
-  if(customBanners && customBanners.length > 0){
-    renderCustomBannerCarousel(customBanners);
-  } else if(featuredProducts && featuredProducts.length > 0){
-    renderBannerCarousel(featuredProducts);
-  } else {
-    if(bannerIntervalId){ clearInterval(bannerIntervalId); bannerIntervalId = null; }
-    wrap.style.display = 'none';
-  }
-}
-
-function renderCustomBannerCarousel(banners){
-  const wrap = document.getElementById('bannerCarousel');
-  const track = document.getElementById('bannerTrack');
-  const dotsWrap = document.getElementById('bannerDots');
-  wrap.style.display = 'block';
-  track.innerHTML = '';
-  dotsWrap.innerHTML = '';
-
-  banners.forEach((b, i)=>{
-    const slide = document.createElement('div');
-    slide.className = 'banner-slide image-slide' + (i===0 ? ' active' : '');
-    slide.innerHTML = `<img src="${b.image_url}" alt="ব্যানার">`;
-    if(b.link_category){
-      slide.onclick = ()=>{
-        const sec = document.getElementById('sec-'+b.link_category);
-        if(sec) sec.scrollIntoView({behavior:'smooth', block:'start'});
-      };
-    }
-    track.appendChild(slide);
-
-    const dot = document.createElement('div');
-    dot.className = 'banner-dot' + (i===0 ? ' active' : '');
-    dot.onclick = (e)=>{ e.stopPropagation(); goToSlide(i); };
-    dotsWrap.appendChild(dot);
-  });
-
-  const goToSlide = startBannerRotation(banners.length);
-}
-
 function renderBannerCarousel(featuredProducts){
   const wrap = document.getElementById('bannerCarousel');
   const track = document.getElementById('bannerTrack');
   const dotsWrap = document.getElementById('bannerDots');
+  if(bannerIntervalId){ clearInterval(bannerIntervalId); bannerIntervalId = null; }
+
+  if(!featuredProducts || featuredProducts.length === 0){
+    wrap.style.display = 'none';
+    return;
+  }
   wrap.style.display = 'block';
   track.innerHTML = '';
   dotsWrap.innerHTML = '';
@@ -1094,45 +964,26 @@ function renderBannerCarousel(featuredProducts){
 
     const dot = document.createElement('div');
     dot.className = 'banner-dot' + (i===0 ? ' active' : '');
-    dot.onclick = (e)=>{ e.stopPropagation(); goToSlide(i); };
+    dot.onclick = (e)=>{ e.stopPropagation(); goToBannerSlide(i); };
     dotsWrap.appendChild(dot);
   });
 
-  const goToSlide = startBannerRotation(featuredProducts.length);
-}
-
-/* ================= WISHLIST (পছন্দের তালিকা) — localStorage ভিত্তিক, লগইন ছাড়াই ================= */
-const WISHLIST_KEY = 'myproduct_wishlist';
-function getWishlist(){
-  try{ return JSON.parse(localStorage.getItem(WISHLIST_KEY)) || []; } catch(e){ return []; }
-}
-function isInWishlist(id){ return getWishlist().includes(id); }
-function toggleWishlist(id){
-  let list = getWishlist();
-  if(list.includes(id)) list = list.filter(x=>x!==id);
-  else list.push(id);
-  localStorage.setItem(WISHLIST_KEY, JSON.stringify(list));
-}
-function updateWishlistCount(){
-  const count = getWishlist().length;
-  const badge = document.getElementById('wishlistCount');
-  if(badge) badge.textContent = count;
-}
-function openWishlist(){
-  const ids = getWishlist();
-  const allProducts = Object.values(PRODUCTS_BY_CAT).flat();
-  const items = allProducts.filter(p=>ids.includes(p.id));
-  const grid = document.getElementById('wishlistGrid');
-  grid.innerHTML = '';
-  if(items.length === 0){
-    grid.innerHTML = `<p style="grid-column:1/-1;color:var(--gray);text-align:center;padding:24px 10px;">এখনো কোনো পণ্য পছন্দের তালিকায় যোগ করা হয়নি — প্রোডাক্ট কার্ডের 🤍 আইকনে ক্লিক করে যোগ করো।</p>`;
-  } else {
-    items.forEach(p=>{
-      const cat = categories.find(c=>c.key===p.category);
-      grid.appendChild(productCard(p, cat ? cat.bg : '#eaf7ff', p.category));
-    });
+  let current = 0;
+  function goToBannerSlide(i){
+    const slides = track.querySelectorAll('.banner-slide');
+    const dots = dotsWrap.querySelectorAll('.banner-dot');
+    slides[current].classList.remove('active');
+    dots[current].classList.remove('active');
+    current = i;
+    slides[current].classList.add('active');
+    dots[current].classList.add('active');
   }
-  openOverlay('wishlistOverlay');
+
+  if(featuredProducts.length > 1){
+    bannerIntervalId = setInterval(()=>{
+      goToBannerSlide((current + 1) % featuredProducts.length);
+    }, 3800);
+  }
 }
 
 let PRODUCTS_BY_CAT = {}; // key -> array of approved product rows (refreshed on load / after order)
@@ -1165,106 +1016,12 @@ function renderCategoryGrid(key, filterField){
   list.forEach(p=>grid.appendChild(productCard(p, cat.bg, key)));
 }
 
-let REVIEWS_MAP = {}; // product_id -> {avg, count}
-
-function renderRatingSummary(productId){
-  const info = REVIEWS_MAP[productId];
-  if(!info || info.count === 0){
-    return `⭐ এখনো কোনো রিভিউ নেই — <span style="text-decoration:underline;">প্রথম রিভিউ দিন</span>`;
-  }
-  const rounded = Math.round(info.avg);
-  const stars = '★'.repeat(rounded) + '☆'.repeat(5 - rounded);
-  return `<span style="color:#f5a300;">${stars}</span> ${info.avg.toFixed(1)} (${info.count} রিভিউ)`;
-}
-
-let currentReviewProduct = null;
-
-async function openReviews(product){
-  currentReviewProduct = product;
-  document.getElementById('reviewProductName').textContent = product.name;
-  document.getElementById('reviewListWrap').innerHTML = '<p style="color:var(--gray);text-align:center;padding:14px;">লোড হচ্ছে...</p>';
-  openOverlay('reviewOverlay');
-
-  const { data, error } = await sb.from('reviews')
-    .select('*').eq('product_id', product.id).eq('status','approved')
-    .order('created_at', {ascending:false});
-
-  const wrap = document.getElementById('reviewListWrap');
-  if(error){ wrap.innerHTML = `<p style="color:var(--red);">রিভিউ লোড করতে সমস্যা হয়েছে।</p>`; return; }
-  if(!data || data.length === 0){
-    wrap.innerHTML = `<p style="color:var(--gray);text-align:center;padding:14px;">এখনো কোনো রিভিউ নেই — প্রথম রিভিউ দাও!</p>`;
-    return;
-  }
-  wrap.innerHTML = data.map(r=>{
-    const stars = '★'.repeat(r.rating) + '☆'.repeat(5 - r.rating);
-    const date = new Date(r.created_at).toLocaleDateString('bn-BD', {year:'numeric', month:'short', day:'numeric'});
-    return `<div class="review-item">
-      <div class="review-top"><b>${r.customer_name}</b> <span style="color:#f5a300;">${stars}</span></div>
-      ${r.comment ? `<div class="review-comment">${r.comment}</div>` : ''}
-      <div class="review-date">${date}</div>
-    </div>`;
-  }).join('');
-}
-
-let selectedReviewStars = 5;
-function setReviewStars(n){
-  selectedReviewStars = n;
-  document.querySelectorAll('.star-picker span').forEach((el,i)=>{
-    el.textContent = (i < n) ? '★' : '☆';
-  });
-}
-
-async function submitReview(e){
-  e.preventDefault();
-  const submitBtn = e.target.querySelector('.modal-submit');
-  submitBtn.disabled = true;
-  submitBtn.textContent = 'পাঠানো হচ্ছে...';
-
-  const name = document.getElementById('review_name').value.trim();
-  const comment = document.getElementById('review_comment').value.trim();
-
-  const { error } = await sb.from('reviews').insert({
-    product_id: currentReviewProduct.id,
-    product_name: currentReviewProduct.name,
-    customer_name: name,
-    rating: selectedReviewStars,
-    comment: comment,
-    status: 'pending'
-  });
-
-  submitBtn.disabled = false;
-  submitBtn.textContent = '✅ রিভিউ জমা দিন';
-
-  if(error){
-    alert('দুঃখিত, রিভিউ জমা দিতে সমস্যা হয়েছে: ' + error.message);
-    return false;
-  }
-  alert('ধন্যবাদ! তোমার রিভিউ জমা হয়েছে ✅ এডমিন যাচাই করার পর এটা সবার জন্য দেখা যাবে।');
-  document.getElementById('reviewForm').reset();
-  setReviewStars(5);
-  return false;
-}
-
 async function loadAndRenderAll(){
-  const [{ data, error }, { data: reviewData }] = await Promise.all([
-    sb.from('products').select('*').eq('status','approved').order('created_at',{ascending:false}),
-    sb.from('reviews').select('product_id, rating').eq('status','approved')
-  ]);
+  const { data, error } = await sb.from('products').select('*').eq('status','approved').order('created_at',{ascending:false});
   if(error){
     console.error('Supabase load error:', error.message);
     return;
   }
-
-  REVIEWS_MAP = {};
-  (reviewData||[]).forEach(r=>{
-    if(!REVIEWS_MAP[r.product_id]) REVIEWS_MAP[r.product_id] = { total:0, count:0 };
-    REVIEWS_MAP[r.product_id].total += r.rating;
-    REVIEWS_MAP[r.product_id].count += 1;
-  });
-  Object.keys(REVIEWS_MAP).forEach(id=>{
-    REVIEWS_MAP[id].avg = (REVIEWS_MAP[id].total / REVIEWS_MAP[id].count);
-  });
-
   const grouped = {};
   categories.forEach(c=> grouped[c.key] = []);
   (data||[]).forEach(p=>{ if(grouped[p.category]) grouped[p.category].push(p); });
@@ -1274,7 +1031,7 @@ async function loadAndRenderAll(){
     renderCategoryGrid(c.key, filterField);
   });
 
-  loadAndRenderBanners((data||[]).filter(p=>p.featured));
+  renderBannerCarousel((data||[]).filter(p=>p.featured));
 
   const total = (data||[]).length;
   const totalEl = document.getElementById('totalProductCount');
@@ -1293,7 +1050,6 @@ async function loadAndRenderAll(){
   });
 }
 loadAndRenderAll();
-updateWishlistCount();
 
 /* ================= USER INFO / MODAL LOGIC ================= */
 let userInfo = null;         // {name, phone, nid, address} - session memory only
